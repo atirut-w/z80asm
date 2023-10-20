@@ -38,8 +38,6 @@ impl Tokenizer {
 
     pub fn tokenize(&mut self, source: String) -> Result<(), TokenizerError> {
         let mut offset = 0;
-        let mut line = 1;
-        let mut column = 1;
 
         for c in source.chars() {
             match self.state {
