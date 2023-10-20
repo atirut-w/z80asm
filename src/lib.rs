@@ -45,53 +45,49 @@ impl Tokenizer {
                 None => break,
             };
             match self.state {
-                TokenizerState::NORMAL => {
-                    match c {
-                        '\r' => {
-                            if source.chars().nth(offset + 1) == Some('\n') {
-                                self.push_token();
-                                self.line += 1;
-                                self.column = 1;
-                                offset += 1;
-                            }
-                        }
-                        '\n' => {
+                TokenizerState::NORMAL => match c {
+                    '\r' => {
+                        if source.chars().nth(offset + 1) == Some('\n') {
                             self.push_token();
                             self.line += 1;
                             self.column = 1;
-                        }
-                        ';' => {
-                            self.push_token();
-                            self.state = TokenizerState::COMMENT;
-                        }
-                        _ => {
-                            if !c.is_whitespace() {
-                                self.current_token.push(c);
-                            } else {
-                                self.push_token();
-                            }
-                            self.column += 1;
+                            offset += 1;
                         }
                     }
-                }
-                TokenizerState::COMMENT => {
-                    match c {
-                        '\r' => {
-                            if source.chars().nth(offset + 1) == Some('\n') {
-                                self.state = TokenizerState::NORMAL;
-                                self.line += 1;
-                                self.column = 1;
-                                offset += 1;
-                            }
+                    '\n' => {
+                        self.push_token();
+                        self.line += 1;
+                        self.column = 1;
+                    }
+                    ';' => {
+                        self.push_token();
+                        self.state = TokenizerState::COMMENT;
+                    }
+                    _ => {
+                        if !c.is_whitespace() {
+                            self.current_token.push(c);
+                        } else {
+                            self.push_token();
                         }
-                        '\n' => {
+                        self.column += 1;
+                    }
+                },
+                TokenizerState::COMMENT => match c {
+                    '\r' => {
+                        if source.chars().nth(offset + 1) == Some('\n') {
                             self.state = TokenizerState::NORMAL;
                             self.line += 1;
                             self.column = 1;
+                            offset += 1;
                         }
-                        _ => {}
                     }
-                }
+                    '\n' => {
+                        self.state = TokenizerState::NORMAL;
+                        self.line += 1;
+                        self.column = 1;
+                    }
+                    _ => {}
+                },
                 _ => unimplemented!("Tokenizer state not implemented"),
             };
             offset += 1;
