@@ -5,9 +5,9 @@ enum TokenizerState {
 }
 
 pub struct TokenizerError {
-    message: String,
-    line: u32,
-    column: u32,
+    pub message: String,
+    pub line: u32,
+    pub column: u32,
 }
 
 pub struct Tokenizer {
