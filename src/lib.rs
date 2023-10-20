@@ -4,7 +4,7 @@ enum TokenizerState {
     COMMENT,
 }
 
-struct TokenizerError {
+pub struct TokenizerError {
     message: String,
     line: u32,
     column: u32,
@@ -23,5 +23,9 @@ impl Tokenizer {
             current_token: String::new(),
             state: TokenizerState::NORMAL,
         }
+    }
+
+    pub fn tokenize(&mut self, source: String) -> Result<(), TokenizerError> {
+        Ok(())
     }
 }
