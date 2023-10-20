@@ -1,7 +1,6 @@
 enum TokenizerState {
     NORMAL,
-    STRING,
-    COMMENT,
+    UNTIL_CHAR,
 }
 
 pub struct TokenizerError {
@@ -20,6 +19,8 @@ pub struct Tokenizer {
     pub tokens: Vec<Token>,
     current_token: String,
     state: TokenizerState,
+    until_char: char,
+    eol_ends_token: bool,
 
     line: u32,
     column: u32,
@@ -31,6 +32,8 @@ impl Tokenizer {
             tokens: Vec::new(),
             current_token: String::new(),
             state: TokenizerState::NORMAL,
+            until_char: '\0',
+            eol_ends_token: true,
             line: 1,
             column: 1,
         }
@@ -61,7 +64,9 @@ impl Tokenizer {
                     }
                     ';' => {
                         self.push_token();
-                        self.state = TokenizerState::COMMENT;
+                        self.state = TokenizerState::UNTIL_CHAR;
+                        self.until_char = '\0';
+                        self.eol_ends_token = false;
                     }
                     _ => {
                         if !c.is_whitespace() {
@@ -72,7 +77,7 @@ impl Tokenizer {
                         self.column += 1;
                     }
                 },
-                TokenizerState::COMMENT => match c {
+                TokenizerState::UNTIL_CHAR => match c {
                     '\r' => {
                         if source.chars().nth(offset + 1) == Some('\n') {
                             self.state = TokenizerState::NORMAL;
