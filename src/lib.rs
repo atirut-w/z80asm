@@ -39,7 +39,11 @@ impl Tokenizer {
     pub fn tokenize(&mut self, source: String) -> Result<(), TokenizerError> {
         let mut offset = 0;
 
-        for c in source.chars() {
+        for _ in source.chars() {
+            let c = match source.chars().nth(offset) {
+                Some(c) => c,
+                None => break,
+            };
             match self.state {
                 TokenizerState::NORMAL => {
                     match c {
