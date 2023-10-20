@@ -60,6 +60,10 @@ impl Tokenizer {
                             self.line += 1;
                             self.column = 1;
                         }
+                        ';' => {
+                            self.push_token();
+                            self.state = TokenizerState::COMMENT;
+                        }
                         _ => {
                             if !c.is_whitespace() {
                                 self.current_token.push(c);
@@ -68,6 +72,24 @@ impl Tokenizer {
                             }
                             self.column += 1;
                         }
+                    }
+                }
+                TokenizerState::COMMENT => {
+                    match c {
+                        '\r' => {
+                            if source.chars().nth(offset + 1) == Some('\n') {
+                                self.state = TokenizerState::NORMAL;
+                                self.line += 1;
+                                self.column = 1;
+                                offset += 1;
+                            }
+                        }
+                        '\n' => {
+                            self.state = TokenizerState::NORMAL;
+                            self.line += 1;
+                            self.column = 1;
+                        }
+                        _ => {}
                     }
                 }
                 _ => unimplemented!("Tokenizer state not implemented"),
