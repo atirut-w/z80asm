@@ -1,6 +1,6 @@
 enum TokenizerState {
     NORMAL,
-    UNTIL_CHAR,
+    CONSUME_UNTIL,
 }
 
 pub struct TokenizerError {
@@ -20,7 +20,7 @@ pub struct Tokenizer {
     current_token: String,
     state: TokenizerState,
     until_char: char,
-    eol_ends_token: bool,
+    eol_ends_consume: bool,
 
     line: u32,
     column: u32,
@@ -33,7 +33,7 @@ impl Tokenizer {
             current_token: String::new(),
             state: TokenizerState::NORMAL,
             until_char: '\0',
-            eol_ends_token: true,
+            eol_ends_consume: true,
             line: 1,
             column: 1,
         }
@@ -50,10 +50,8 @@ impl Tokenizer {
             match self.state {
                 TokenizerState::NORMAL => match c {
                     '\r' => {
-                        if source.chars().nth(offset + 1) == Some('\n') {
-                            self.push_token();
-                            self.line += 1;
-                            self.column = 1;
+                        self.push_token();
+                        if source.chars().nth(offset + 1) != Some('\n') {
                             offset += 1;
                         }
                     }
@@ -64,9 +62,9 @@ impl Tokenizer {
                     }
                     ';' => {
                         self.push_token();
-                        self.state = TokenizerState::UNTIL_CHAR;
+                        self.state = TokenizerState::CONSUME_UNTIL;
                         self.until_char = '\0';
-                        self.eol_ends_token = false;
+                        self.eol_ends_consume = true;
                     }
                     _ => {
                         if !c.is_whitespace() {
@@ -77,17 +75,18 @@ impl Tokenizer {
                         self.column += 1;
                     }
                 },
-                TokenizerState::UNTIL_CHAR => match c {
+                TokenizerState::CONSUME_UNTIL => match c {
                     '\r' => {
-                        if source.chars().nth(offset + 1) == Some('\n') {
-                            self.state = TokenizerState::NORMAL;
-                            self.line += 1;
-                            self.column = 1;
+                        self.push_token();
+                        if source.chars().nth(offset + 1) != Some('\n') {
                             offset += 1;
                         }
                     }
                     '\n' => {
-                        self.state = TokenizerState::NORMAL;
+                        if self.eol_ends_consume {
+                            self.push_token();
+                            self.state = TokenizerState::NORMAL;
+                        }
                         self.line += 1;
                         self.column = 1;
                     }
