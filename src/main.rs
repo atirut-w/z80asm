@@ -26,7 +26,9 @@ fn main() {
     let mut tokenizer = Tokenizer::new();
     match tokenizer.tokenize(source) {
         Ok(_) => {
-            println!("Tokens: {:?}", tokenizer.tokens);
+            for token in tokenizer.tokens {
+                println!("`{}` on {}:{}", token.string, token.line, token.column);
+            }
         }
         Err(e) => {
             eprintln!("{} on {}:{}", e.message, e.line, e.column);
