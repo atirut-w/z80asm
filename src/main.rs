@@ -7,7 +7,7 @@ struct Args {
     input: PathBuf,
 
     /// Output file
-    #[clap(short, long)]
+    #[clap(short, long, default_value = "a.elf")]
     output: Option<PathBuf>,
 }
 
