@@ -11,6 +11,9 @@
             "request": "launch",
             "program": "${workspaceFolder}/build/z80asm",
             "cwd": "${workspaceFolder}",
+            "args": [
+                "${workspaceFolder}/tests/test.asm",
+            ],
         }
     ]
 }
