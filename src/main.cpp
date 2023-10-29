@@ -1,6 +1,8 @@
 #include <argparse/argparse.hpp>
 #include <iostream>
 #include <fstream>
+#include <string>
+#include <tokenizer.hpp>
 
 using namespace argparse;
 using namespace std;
@@ -33,6 +35,13 @@ int main(int argc, char *argv[])
         cout << "Error: could not open input file" << endl;
         exit(1);
     }
+    input.seekg(0, ios::end);
+    size_t size = input.tellg();
+    input.seekg(0, ios::beg);
+    string buffer(size, ' ');
+    input.read(&buffer[0], size);
+
+    Tokenizer tokenizer;
 
     return 0;
 }
