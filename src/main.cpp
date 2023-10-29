@@ -1,12 +1,13 @@
 #include <argparse/argparse.hpp>
 #include <iostream>
+#include <fstream>
 
 using namespace argparse;
 using namespace std;
 
 int main(int argc, char *argv[])
 {
-    ArgumentParser program = ArgumentParser("z80asm");
+    ArgumentParser program("z80asm");
 
     program.add_argument("input")
         .help("input file");
@@ -19,10 +20,17 @@ int main(int argc, char *argv[])
     {
         program.parse_args(argc, argv);
     }
-    catch (const std::runtime_error &err)
+    catch (const runtime_error &err)
     {
-        std::cout << err.what() << std::endl;
-        std::cout << program;
+        cout << err.what() << endl;
+        cout << program;
+        exit(1);
+    }
+
+    ifstream input(program.get<string>("input"));
+    if (!input)
+    {
+        cout << "Error: could not open input file" << endl;
         exit(1);
     }
 

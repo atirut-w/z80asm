@@ -3,6 +3,7 @@ project(Z80ASM)
 
 add_executable(z80asm
     "src/main.cpp"
+    "src/tokenizer.cpp"
 )
 target_include_directories(z80asm PRIVATE "include")
 
