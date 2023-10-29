@@ -1,0 +1,4 @@
+build/
+
+# VSCode stuff
+.vscode/settings.json
