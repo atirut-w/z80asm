@@ -1,6 +1,7 @@
 #include <argparse/argparse.hpp>
 #include <memory>
 #include <iostream>
+#include <filesystem>
 
 auto parse_arguments(int argc, char **argv)
 {
@@ -25,7 +26,14 @@ auto parse_arguments(int argc, char **argv)
 
 int main(int argc, char **argv)
 {
-    auto args = parse_arguments(argc, argv);
+    const auto args = parse_arguments(argc, argv);
+    const auto input = std::filesystem::path(args->get<std::string>("input"));
+
+    if (!std::filesystem::exists(input) || std::filesystem::is_directory(input))
+    {
+        std::cout << "error: input file does not exist" << std::endl;
+        return 1;
+    }
 
     return 0;
 }
