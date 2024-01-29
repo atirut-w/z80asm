@@ -3,7 +3,7 @@
 #include <iostream>
 #include <filesystem>
 
-auto parse_arguments(int argc, char **argv)
+std::shared_ptr<const argparse::ArgumentParser> parse_arguments(int argc, char **argv)
 {
     auto parser = std::make_shared<argparse::ArgumentParser>("z80asm");
 
@@ -26,7 +26,7 @@ auto parse_arguments(int argc, char **argv)
 
 int main(int argc, char **argv)
 {
-    const auto args = parse_arguments(argc, argv);
+    auto args = parse_arguments(argc, argv);
     const auto input = std::filesystem::path(args->get<std::string>("input"));
 
     if (!std::filesystem::exists(input) || std::filesystem::is_directory(input))
