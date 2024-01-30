@@ -25,6 +25,8 @@ private:
 
     static bool is_whitespace(char);
 
+    void skip_comment();
+
 public:
     Tokenizer(InputReader reader) : reader(reader) {}
 
