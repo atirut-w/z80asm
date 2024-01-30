@@ -10,29 +10,31 @@ InputReader::InputReader(std::istream &stream)
 
 char InputReader::peek()
 {
-    return input[0];
-}
-
-char InputReader::peek(int offset)
-{
-    return input[offset];
+    return input[pos];
 }
 
 char InputReader::consume()
 {
-    char c = input[0];
-    input.erase(0, 1);
-    return c;
-}
-
-char InputReader::consume(int offset)
-{
-    char c = input[offset];
-    input.erase(offset, 1);
-    return c;
+    char ch = input[pos++];
+    if (ch == '\n')
+    {
+        line++;
+        column = 1;
+    }
+    else if (ch == '\r' && peek() == '\n') // I hate CRLF I hate CRLF I hate CRLF.....
+    {
+        pos++;
+        line++;
+        column = 1;
+    }
+    else
+    {
+        column++;
+    }
+    return ch;
 }
 
 bool InputReader::eof()
 {
-    return input.empty();
+    return pos >= input.size();
 }
