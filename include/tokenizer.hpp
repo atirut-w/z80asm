@@ -23,6 +23,8 @@ private:
     InputReader reader;
     std::string buffer;
 
+    static bool is_whitespace(char);
+
 public:
     Tokenizer(InputReader reader) : reader(reader) {}
 

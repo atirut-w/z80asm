@@ -2,9 +2,14 @@
 #include <cstring>
 #include <sstream>
 
+bool Tokenizer::is_whitespace(char ch)
+{
+    return isspace(ch) > 0;
+}
+
 Token Tokenizer::read_next()
 {
-    read_while([](char ch) { return isspace(ch) > 0; });
+    read_while(is_whitespace);
     if (reader.eof())
         return {Token::TK_EOF, NULL};
 
