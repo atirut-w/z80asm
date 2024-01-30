@@ -38,3 +38,10 @@ bool InputReader::eof()
 {
     return pos >= input.size();
 }
+
+void InputReader::die(const std::string &message)
+{
+    std::stringstream ss;
+    ss << "error: " << message << " at " << line << ":" << column;
+    throw std::runtime_error(ss.str());
+}

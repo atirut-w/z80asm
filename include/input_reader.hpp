@@ -16,4 +16,5 @@ public:
     char peek();
     char consume();
     bool eof();
+    void die(const std::string &message);
 };
