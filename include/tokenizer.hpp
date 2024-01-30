@@ -8,6 +8,7 @@ class Token
 public:
     enum Type
     {
+        TK_EOF,
         TK_PUNC,
         TK_NUM,
         TK_INST,
@@ -22,4 +23,6 @@ private:
     std::string buffer;
 public:
     Tokenizer(InputReader reader) : reader(reader) {}
+
+    Token read_next();
 };
