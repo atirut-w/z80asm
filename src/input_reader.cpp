@@ -10,11 +10,16 @@ InputReader::InputReader(std::istream &stream)
 
 char InputReader::peek()
 {
+    if (eof())
+        return '\0';
     return input[pos];
 }
 
 char InputReader::consume()
 {
+    if (eof())
+        return '\0';
+    
     char ch = input[pos++];
     if (ch == '\n')
     {
