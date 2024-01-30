@@ -6,7 +6,6 @@ class InputReader
 {
 private:
     std::string input;
-    int pos = 0;
     int line = 1;
     int column = 1;
 public:
@@ -15,6 +14,6 @@ public:
     char peek();
     char peek(int offset);
     char consume();
-    void consume(int offset);
+    char consume(int offset);
     bool eof();
 };
