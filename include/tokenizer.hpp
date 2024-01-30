@@ -2,6 +2,7 @@
 #include <any>
 #include <input_reader.hpp>
 #include <string>
+#include <functional>
 
 class Token
 {
@@ -25,4 +26,5 @@ public:
     Tokenizer(InputReader reader) : reader(reader) {}
 
     Token read_next();
+    std::string read_while(std::function<bool(char)> predicate);
 };
