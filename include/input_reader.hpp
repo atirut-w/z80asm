@@ -7,11 +7,12 @@ class InputReader
 private:
     std::string input;
     int pos = 0;
-    int line = 1;
-    int column = 1;
 
 public:
     InputReader(std::istream &stream);
+
+    int line = 1;
+    int column = 1;
 
     char peek();
     char consume();
