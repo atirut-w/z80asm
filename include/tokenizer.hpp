@@ -1,1 +1,25 @@
 #pragma once
+#include <any>
+#include <input_reader.hpp>
+#include <string>
+
+class Token
+{
+public:
+    enum Type
+    {
+        TK_PUNC,
+        TK_NUM,
+        TK_INST,
+    } type;
+    std::any value;
+};
+
+class Tokenizer
+{
+private:
+    InputReader reader;
+    std::string buffer;
+public:
+    Tokenizer(InputReader reader) : reader(reader) {}
+};
