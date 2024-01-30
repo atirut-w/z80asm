@@ -22,6 +22,7 @@ class Tokenizer
 private:
     InputReader reader;
     std::string buffer;
+
 public:
     Tokenizer(InputReader reader) : reader(reader) {}
 
