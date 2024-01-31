@@ -9,6 +9,8 @@ class Assembler
 private:
     uint16_t pc = 0;
 
+    static std::string trim(std::string str);
+
 public:
     std::vector<uint8_t> program;
     // std::map<std::string, uint16_t> labels;

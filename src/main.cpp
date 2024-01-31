@@ -2,6 +2,7 @@
 #include <memory>
 #include <iostream>
 #include <filesystem>
+#include <fstream>
 
 std::shared_ptr<const argparse::ArgumentParser> parse_arguments(int argc, char **argv)
 {
@@ -35,5 +36,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    std::ifstream input_stream(input);
+    
     return 0;
 }
