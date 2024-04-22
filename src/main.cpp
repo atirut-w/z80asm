@@ -3,9 +3,12 @@
 #include <iostream>
 #include <filesystem>
 
-std::shared_ptr<const argparse::ArgumentParser> parse_arguments(int argc, char **argv)
+using namespace std;
+using namespace argparse;
+
+shared_ptr<const ArgumentParser> parse_arguments(int argc, char **argv)
 {
-    auto parser = std::make_shared<argparse::ArgumentParser>("z80asm");
+    auto parser = make_shared<ArgumentParser>("z80asm");
 
     parser->add_argument("input")
         .help("input file");
@@ -14,10 +17,10 @@ std::shared_ptr<const argparse::ArgumentParser> parse_arguments(int argc, char *
     {
         parser->parse_args(argc, argv);
     }
-    catch (const std::runtime_error &err)
+    catch (const runtime_error &err)
     {
-        std::cout << err.what() << std::endl;
-        std::cout << *parser << std::endl;
+        cout << err.what() << endl;
+        cout << *parser << endl;
         exit(0);
     }
 
@@ -27,11 +30,11 @@ std::shared_ptr<const argparse::ArgumentParser> parse_arguments(int argc, char *
 int main(int argc, char **argv)
 {
     auto args = parse_arguments(argc, argv);
-    const auto input = std::filesystem::path(args->get<std::string>("input"));
+    const auto input = filesystem::path(args->get<string>("input"));
 
-    if (!std::filesystem::exists(input) || std::filesystem::is_directory(input))
+    if (!filesystem::exists(input) || filesystem::is_directory(input))
     {
-        std::cout << "error: input file does not exist" << std::endl;
+        cout << "error: input file does not exist" << endl;
         return 1;
     }
 

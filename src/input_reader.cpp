@@ -1,9 +1,11 @@
 #include <input_reader.hpp>
 #include <sstream>
 
-InputReader::InputReader(std::istream &stream)
+using namespace std;
+
+InputReader::InputReader(istream &stream)
 {
-    std::stringstream buffer;
+    stringstream buffer;
     buffer << stream.rdbuf();
     input = buffer.str();
 }
@@ -44,9 +46,9 @@ bool InputReader::eof()
     return pos >= input.size();
 }
 
-void InputReader::die(const std::string &message)
+void InputReader::die(const string &message)
 {
-    std::stringstream ss;
+    stringstream ss;
     ss << "error: " << message << " at " << line << ":" << column;
-    throw std::runtime_error(ss.str());
+    throw runtime_error(ss.str());
 }
