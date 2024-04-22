@@ -1,20 +1,28 @@
 #include <input_reader.hpp>
 #include <sstream>
+#include <fstream>
 
 using namespace std;
 
-InputReader::InputReader(istream &stream)
+InputReader::InputReader(filesystem::path path)
 {
+    this->path = filesystem::absolute(path);
+    ifstream stream(path);
+    if (!stream)
+    {
+        throw runtime_error("could not open `" + path.string() + "` for reading");
+    }
+
     stringstream buffer;
     buffer << stream.rdbuf();
-    input = buffer.str();
+    content = buffer.str();
 }
 
 char InputReader::peek()
 {
     if (eof())
         return '\0';
-    return input[pos];
+    return content[pos];
 }
 
 char InputReader::consume()
@@ -22,7 +30,7 @@ char InputReader::consume()
     if (eof())
         return '\0';
     
-    char ch = input[pos++];
+    char ch = content[pos++];
     if (ch == '\n')
     {
         line++;
@@ -43,12 +51,10 @@ char InputReader::consume()
 
 bool InputReader::eof()
 {
-    return pos >= input.size();
+    return pos >= content.size();
 }
 
 void InputReader::die(const string &message)
 {
-    stringstream ss;
-    ss << "error: " << message << " at " << line << ":" << column;
-    throw runtime_error(ss.str());
+    throw runtime_error(path.string() + ":" + to_string(line) + ":" + to_string(column) + ": " + message);
 }

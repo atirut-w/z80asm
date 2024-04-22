@@ -2,6 +2,8 @@
 #include <memory>
 #include <iostream>
 #include <filesystem>
+#include <input_reader.hpp>
+#include <fstream>
 
 using namespace std;
 using namespace argparse;
@@ -30,12 +32,13 @@ shared_ptr<const ArgumentParser> parse_arguments(int argc, char **argv)
 int main(int argc, char **argv)
 {
     auto args = parse_arguments(argc, argv);
-    const auto input = filesystem::path(args->get<string>("input"));
 
-    if (!filesystem::exists(input) || filesystem::is_directory(input))
+    InputReader reader(args->get<string>("input"));
+    while (!reader.eof())
     {
-        cout << "error: input file does not exist" << endl;
-        return 1;
+        cout << reader.peek();
+        reader.die("unexpected character");
+        reader.consume();
     }
 
     return 0;
