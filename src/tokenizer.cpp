@@ -89,11 +89,13 @@ void Tokenizer::tokenize()
 
             if (ch == '\n')
             {
-                reader.consume();
+                current_token = Token();
+                current_token.type = Token::TYPE_NEWLINE;
+                current_token.value = reader.consume();
                 flush_token();
             }
             else
-                current_token.value += reader.consume();
+                reader.consume();
             
             break;
         }
