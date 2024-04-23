@@ -41,6 +41,7 @@ int main(int argc, char **argv)
     }
 
     Tokenizer tokenizer(input);
+    tokenizer.tokenize();
 
     return 0;
 }

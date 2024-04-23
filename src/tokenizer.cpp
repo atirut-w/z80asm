@@ -1,4 +1,5 @@
 #include <tokenizer.hpp>
+#include <stdexcept>
 
 using namespace std;
 
@@ -20,6 +21,15 @@ void Tokenizer::tokenize()
 {
     while (!reader.eof())
     {
-        reader.consume();
+        switch (current_token.type)
+        {
+        case Token::TYPE_UNKNOWN:
+        {
+            reader.consume(); // TODO: Determine token type
+            break;
+        }
+        default:
+            throw runtime_error("unhandled token type " + to_string(current_token.type));
+        }
     }
 }
