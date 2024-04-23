@@ -49,6 +49,7 @@ int main(int argc, char **argv)
     {
         auto reader = tokenizer.get_reader();
         cout << filesystem::absolute(args->get<string>("input")).string() << ":" << reader.get_line() << ":" << reader.get_column() << ": error: " << err.what() << endl;
+        return 1;
     }
 
     return 0;
