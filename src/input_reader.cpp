@@ -32,6 +32,7 @@ char InputReader::consume()
         pos++;
         line++;
         column = 1;
+        ch = '\n'; // No CRLF for you
     }
     else
     {
