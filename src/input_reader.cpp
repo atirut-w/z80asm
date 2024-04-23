@@ -3,18 +3,16 @@
 
 using namespace std;
 
-InputReader::InputReader(istream &stream)
+InputReader::InputReader(std::shared_ptr<std::istream> stream)
 {
-    stringstream buffer;
-    buffer << stream.rdbuf();
-    input = buffer.str();
+    this->stream = stream;
 }
 
 char InputReader::peek()
 {
     if (eof())
         return '\0';
-    return input[pos];
+    return stream->peek();
 }
 
 char InputReader::consume()
@@ -22,7 +20,8 @@ char InputReader::consume()
     if (eof())
         return '\0';
     
-    char ch = input[pos++];
+    char ch;
+    stream->get(ch);
     if (ch == '\n')
     {
         line++;
@@ -43,5 +42,5 @@ char InputReader::consume()
 
 bool InputReader::eof()
 {
-    return pos >= input.size();
+    return stream->peek() == EOF;
 }

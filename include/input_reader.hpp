@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <istream>
+#include <memory>
 
 /**
  * @brief Utility class to facilitate text parsing. It provides position tracking by line and column, peek/consume, and EOF detection.
@@ -10,13 +11,13 @@
 class InputReader
 {
 private:
-    std::string input;
+    std::shared_ptr<std::istream> stream;
     int pos = 0;
     int line = 1;
     int column = 1;
 
 public:
-    InputReader(std::istream &stream);
+    InputReader(std::shared_ptr<std::istream> stream);
 
     int get_line() { return line; }
     int get_column() { return column; }

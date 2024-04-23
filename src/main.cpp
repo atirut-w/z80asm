@@ -32,8 +32,8 @@ int main(int argc, char **argv)
 {
     auto args = parse_arguments(argc, argv);
 
-    ifstream input(args->get<string>("input"));
-    if (!input)
+    auto input = make_shared<ifstream>(args->get<string>("input"));
+    if (!*input)
     {
         cout << "error: could not open `" << args->get<string>("input") << "` for reading" << endl;
         return 1;
