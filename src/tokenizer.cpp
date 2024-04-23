@@ -13,8 +13,8 @@ void Tokenizer::flush_token()
     if (current_token.value.length() > 0)
     {
         tokens.push_back(current_token);
-        current_token = Token();
     }
+    current_token = Token();
 }
 
 void Tokenizer::tokenize()
@@ -91,9 +91,6 @@ void Tokenizer::tokenize()
 
             if (ch == '\n')
             {
-                current_token = Token();
-                current_token.type = Token::TYPE_NEWLINE;
-                current_token.value = reader.consume();
                 flush_token();
             }
             else
