@@ -2,6 +2,11 @@
 #include <string>
 #include <istream>
 
+/**
+ * @brief Utility class to facilitate text parsing. It provides position tracking by line and column, peek/consume, and EOF detection.
+ * 
+ * @warning This class loads the entire input stream at once, so be mindful of memory usage.
+ */
 class InputReader
 {
 private:
