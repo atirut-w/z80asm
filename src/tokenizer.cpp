@@ -74,7 +74,7 @@ void Tokenizer::tokenize()
         {
             char ch = reader.peek();
 
-            if (!isalnum(ch))
+            if (!isalnum(ch) && ch != '_')
                 flush_token();
             else
                 current_token.value += reader.consume();
