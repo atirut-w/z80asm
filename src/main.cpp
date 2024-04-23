@@ -41,7 +41,15 @@ int main(int argc, char **argv)
     }
 
     Tokenizer tokenizer(input);
-    tokenizer.tokenize();
+    try
+    {
+        tokenizer.tokenize();
+    }
+    catch (const runtime_error &err)
+    {
+        auto reader = tokenizer.get_reader();
+        cout << filesystem::absolute(args->get<string>("input")).string() << ":" << reader.get_line() << ":" << reader.get_column() << ": error: " << err.what() << endl;
+    }
 
     return 0;
 }

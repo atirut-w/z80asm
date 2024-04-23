@@ -1,5 +1,6 @@
 #include <tokenizer.hpp>
 #include <stdexcept>
+#include <cctype>
 
 using namespace std;
 
@@ -12,8 +13,7 @@ void Tokenizer::flush_token()
     if (current_token.value.length() > 0)
     {
         tokens.push_back(current_token);
-        current_token.type = Token::TYPE_UNKNOWN;
-        current_token.value = "";
+        current_token = Token();
     }
 }
 
@@ -25,7 +25,76 @@ void Tokenizer::tokenize()
         {
         case Token::TYPE_UNKNOWN:
         {
-            reader.consume(); // TODO: Determine token type
+            char ch = reader.peek();
+
+            if (isblank(ch))
+            {
+                reader.consume();
+                continue;
+            }
+            else if (isalpha(ch)) // Identifier
+                current_token.type = Token::TYPE_IDENT;
+            else if (isdigit(ch)) // Number
+                current_token.type = Token::TYPE_NUMBER;
+            else if (ch == '\n')
+            {
+                current_token.type = Token::TYPE_NEWLINE;
+                current_token.value = reader.consume();
+                flush_token();
+            }
+            else if (ch == ':')
+            {
+                current_token.type = Token::TYPE_COLON;
+                current_token.value = reader.consume();
+                flush_token();
+            }
+            else if (ch == ',')
+            {
+                current_token.type = Token::TYPE_COMMA;
+                current_token.value = reader.consume();
+                flush_token();
+            }
+            else if (ch == ';')
+                current_token.type = Token::TYPE_COMMENT;
+            else
+                throw runtime_error("could not determine token type");
+
+            break;
+        }
+        case Token::TYPE_IDENT:
+        {
+            char ch = reader.peek();
+
+            if (!isalnum(ch))
+                flush_token();
+            else
+                current_token.value += reader.consume();
+            
+            break;
+        }
+        case Token::TYPE_NUMBER:
+        {
+            char ch = reader.peek();
+
+            if (!isxdigit(ch))
+                flush_token();
+            else
+                current_token.value += reader.consume();
+            
+            break;
+        }
+        case Token::TYPE_COMMENT:
+        {
+            char ch = reader.peek();
+
+            if (ch == '\n')
+            {
+                reader.consume();
+                flush_token();
+            }
+            else
+                current_token.value += reader.consume();
+            
             break;
         }
         default:

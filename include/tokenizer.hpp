@@ -9,9 +9,11 @@ struct Token
     {
         TYPE_UNKNOWN,
         TYPE_IDENT,
-        TYPE_WHITESPACE,
+        TYPE_NEWLINE,
         TYPE_COLON,
         TYPE_COMMA,
+        TYPE_NUMBER,
+        TYPE_COMMENT,
     } type = TYPE_UNKNOWN;
     std::string value;
 };
@@ -28,5 +30,6 @@ public:
     std::vector<Token> tokens;
 
     Tokenizer(std::shared_ptr<std::istream> stream);
+    const InputReader &get_reader() { return reader; }
     void tokenize();
 };
