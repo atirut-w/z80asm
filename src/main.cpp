@@ -3,7 +3,6 @@
 #include <iostream>
 #include <filesystem>
 #include <fstream>
-#include <input_reader.hpp>
 #include <tokenizer.hpp>
 
 using namespace std;
@@ -40,6 +39,8 @@ int main(int argc, char **argv)
         cout << "error: could not open `" << args->get<string>("input") << "` for reading" << endl;
         return 1;
     }
+
+    Tokenizer tokenizer(input);
 
     return 0;
 }
