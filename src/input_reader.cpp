@@ -45,10 +45,3 @@ bool InputReader::eof()
 {
     return pos >= input.size();
 }
-
-void InputReader::die(const string &message)
-{
-    stringstream ss;
-    ss << "error: " << message << " at " << line << ":" << column;
-    throw runtime_error(ss.str());
-}
