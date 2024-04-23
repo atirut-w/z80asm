@@ -6,6 +6,7 @@ using namespace std;
 
 Tokenizer::Tokenizer(std::shared_ptr<std::istream> stream) : reader(stream)
 {
+    // TODO: Consider inlining this
 }
 
 void Tokenizer::flush_token()
@@ -38,6 +39,12 @@ void Tokenizer::tokenize()
                 current_token.type = Token::TYPE_IDENT;
             else if (isdigit(ch)) // Number
                 current_token.type = Token::TYPE_NUMBER;
+            else if (ch == '(' || ch == ')')
+            {
+                current_token.type = Token::TYPE_PAREN;
+                current_token.value = reader.consume();
+                flush_token();
+            }
             else if (ch == '\n')
             {
                 current_token.type = Token::TYPE_NEWLINE;
@@ -78,7 +85,7 @@ void Tokenizer::tokenize()
         {
             char ch = reader.peek();
 
-            if (!isxdigit(ch))
+            if (!isxdigit(ch)) // TODO: Consider supporting floating point numbers
                 flush_token();
             else
                 current_token.value += reader.consume();

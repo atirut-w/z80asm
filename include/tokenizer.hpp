@@ -14,6 +14,7 @@ struct Token
         TYPE_COMMA,
         TYPE_NUMBER,
         TYPE_COMMENT,
+        TYPE_PAREN,
     } type = TYPE_UNKNOWN;
     std::string value;
     int line = 1;
