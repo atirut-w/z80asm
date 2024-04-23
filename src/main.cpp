@@ -3,6 +3,8 @@
 #include <iostream>
 #include <filesystem>
 #include <fstream>
+#include <input_reader.hpp>
+#include <tokenizer.hpp>
 
 using namespace std;
 using namespace argparse;
