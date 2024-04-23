@@ -16,6 +16,8 @@ struct Token
         TYPE_COMMENT,
     } type = TYPE_UNKNOWN;
     std::string value;
+    int line = 1;
+    int column = 1;
 };
 
 class Tokenizer

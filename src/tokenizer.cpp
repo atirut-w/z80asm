@@ -26,6 +26,8 @@ void Tokenizer::tokenize()
         case Token::TYPE_UNKNOWN:
         {
             char ch = reader.peek();
+            current_token.line = reader.get_line();
+            current_token.column = reader.get_column();
 
             if (isblank(ch))
             {
