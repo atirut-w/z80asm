@@ -12,7 +12,6 @@ class InputReader
 {
 private:
     std::shared_ptr<std::istream> stream;
-    int pos = 0;
     int line = 1;
     int column = 1;
 

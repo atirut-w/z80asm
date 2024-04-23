@@ -29,7 +29,6 @@ char InputReader::consume()
     }
     else if (ch == '\r' && peek() == '\n') // I hate CRLF I hate CRLF I hate CRLF.....
     {
-        pos++;
         line++;
         column = 1;
         ch = '\n'; // No CRLF for you
