@@ -27,8 +27,12 @@ char InputReader::consume()
         line++;
         column = 1;
     }
-    else if (ch == '\r' && peek() == '\n') // I hate CRLF I hate CRLF I hate CRLF.....
+    else if (ch == '\r') // I hate CRLF I hate CRLF I hate CRLF.....
     {
+        if (peek() == '\n')
+        {
+            stream->get();
+        }
         line++;
         column = 1;
         ch = '\n'; // No CRLF for you
