@@ -1,10 +1,12 @@
 #pragma once
 #include <input_reader.hpp>
 #include <vector>
+#include <variant>
 #include <string>
 
 struct Token
 {
+    // TODO: Consider combining colon and comma into one "punctuation" type
     enum Type
     {
         TYPE_UNKNOWN,
@@ -13,10 +15,9 @@ struct Token
         TYPE_COLON,
         TYPE_COMMA,
         TYPE_NUMBER,
-        TYPE_COMMENT,
         TYPE_PAREN,
     } type = TYPE_UNKNOWN;
-    std::string value;
+    std::variant<std::string, int> value;
     int line = 1;
     int column = 1;
 };
@@ -25,9 +26,6 @@ class Tokenizer
 {
 private:
     InputReader reader;
-    Token current_token;
-
-    void flush_token();
 
 public:
     std::vector<Token> tokens;

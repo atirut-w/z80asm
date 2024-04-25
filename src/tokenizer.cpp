@@ -9,104 +9,82 @@ Tokenizer::Tokenizer(std::shared_ptr<std::istream> stream) : reader(stream)
     // TODO: Consider inlining this
 }
 
-void Tokenizer::flush_token()
-{
-    if (current_token.value.length() > 0)
-    {
-        tokens.push_back(current_token);
-    }
-    current_token = Token();
-}
-
 void Tokenizer::tokenize()
 {
     while (!reader.eof())
     {
-        switch (current_token.type)
-        {
-        case Token::TYPE_UNKNOWN:
-        {
-            char ch = reader.peek();
-            current_token.line = reader.get_line();
-            current_token.column = reader.get_column();
+        char next = reader.peek();
+        Token current;
+        current.line = reader.get_line();
+        current.column = reader.get_column();
 
-            if (isblank(ch))
-            {
+        if (isblank(next)) // Horizontal whitespace
+        {
+            while (isblank(reader.peek()))
                 reader.consume();
-                continue;
-            }
-            else if (isalpha(ch)) // Identifier
-                current_token.type = Token::TYPE_IDENT;
-            else if (isdigit(ch)) // Number
-                current_token.type = Token::TYPE_NUMBER;
-            else if (ch == '(' || ch == ')')
-            {
-                current_token.type = Token::TYPE_PAREN;
-                current_token.value = reader.consume();
-                flush_token();
-            }
-            else if (ch == '\n')
-            {
-                current_token.type = Token::TYPE_NEWLINE;
-                current_token.value = reader.consume();
-                flush_token();
-            }
-            else if (ch == ':')
-            {
-                current_token.type = Token::TYPE_COLON;
-                current_token.value = reader.consume();
-                flush_token();
-            }
-            else if (ch == ',')
-            {
-                current_token.type = Token::TYPE_COMMA;
-                current_token.value = reader.consume();
-                flush_token();
-            }
-            else if (ch == ';')
-                current_token.type = Token::TYPE_COMMENT;
-            else
-                throw runtime_error("could not determine token type");
-
-            break;
         }
-        case Token::TYPE_IDENT:
+        else if (next == ';') // Comment
         {
-            char ch = reader.peek();
-
-            if (!isalnum(ch) && ch != '_')
-                flush_token();
-            else
-                current_token.value += reader.consume();
-            
-            break;
-        }
-        case Token::TYPE_NUMBER:
-        {
-            char ch = reader.peek();
-
-            if (!isxdigit(ch)) // TODO: Consider supporting floating point numbers
-                flush_token();
-            else
-                current_token.value += reader.consume();
-            
-            break;
-        }
-        case Token::TYPE_COMMENT:
-        {
-            char ch = reader.peek();
-
-            if (ch == '\n')
-            {
-                flush_token();
-            }
-            else
+            while (reader.peek() != '\n')
                 reader.consume();
-            
-            break;
         }
-        default:
-            throw runtime_error("unhandled token type " + to_string(current_token.type));
+        else if (isalpha(next) || next == '_') // Identifier
+        {
+            current.type = Token::TYPE_IDENT;
+            while (isalnum(reader.peek()) || reader.peek() == '_')
+            {
+                get<string>(current.value) += reader.consume();
+            }
+            tokens.push_back(current);
         }
+        else if (next == '\n') // Newline
+        {
+            current.type = Token::TYPE_NEWLINE;
+            tokens.push_back(current);
+            reader.consume();
+        }
+        else if (next == ':') // Colon
+        {
+            current.type = Token::TYPE_COLON;
+            tokens.push_back(current);
+            reader.consume();
+        }
+        else if (next == ',') // Comma
+        {
+            current.type = Token::TYPE_COMMA;
+            tokens.push_back(current);
+            reader.consume();
+        }
+        else if (isdigit(next)) // Number
+        {
+            // TODO: More strict validation
+            current.type = Token::TYPE_NUMBER;
+            string literal;
+            while (isxdigit(reader.peek()) || tolower(reader.peek()) == 'x')
+            {
+                literal += reader.consume();
+            }
+
+            try
+            {
+                current.value = stoi(literal, nullptr, 0);
+            }
+            catch (const invalid_argument &err)
+            {
+                throw runtime_error("malformed integer literal `" + literal + "`");
+            }
+            catch (const out_of_range &err)
+            {
+                throw runtime_error("integer literal `" + literal + "` is out of range");
+            }
+            tokens.push_back(current);
+        }
+        else if (next == '(' || next == ')') // Parenthesis
+        {
+            current.type = Token::TYPE_PAREN;
+            get<string>(current.value) += reader.consume();
+        }
+        else // Something went very wrong
+            throw runtime_error("could not determine token type");
     }
 }
