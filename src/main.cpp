@@ -52,5 +52,19 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    // Dump tokens
+    for (auto token : tokenizer.tokens)
+    {
+        cout << token.line << ":" << token.column << ":" << token.type << ": ";
+        if (token.value.index() == 0)
+        {
+            cout << get<string>(token.value) << endl;
+        }
+        else
+        {
+            cout << get<int>(token.value) << endl;
+        }
+    }
+
     return 0;
 }
