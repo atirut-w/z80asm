@@ -3,6 +3,7 @@
 #include <iostream>
 #include <filesystem>
 #include <fstream>
+#include <tokenizer.hpp>
 
 using namespace std;
 using namespace argparse;
@@ -37,6 +38,32 @@ int main(int argc, char **argv)
     {
         cout << "error: could not open `" << args->get<string>("input") << "` for reading" << endl;
         return 1;
+    }
+
+    Tokenizer tokenizer(input);
+    try
+    {
+        tokenizer.tokenize();
+    }
+    catch (const runtime_error &err)
+    {
+        auto reader = tokenizer.get_reader();
+        cout << filesystem::absolute(args->get<string>("input")).string() << ":" << reader.get_line() << ":" << reader.get_column() << ": error: " << err.what() << endl;
+        return 1;
+    }
+
+    // Dump tokens
+    for (auto token : tokenizer.tokens)
+    {
+        cout << token.line << ":" << token.column << ":" << token.type << ": ";
+        if (token.value.index() == 0)
+        {
+            cout << get<string>(token.value) << endl;
+        }
+        else
+        {
+            cout << get<int>(token.value) << endl;
+        }
     }
 
     return 0;
