@@ -71,11 +71,11 @@ void Tokenizer::tokenize()
             }
             catch (const invalid_argument &err)
             {
-                throw runtime_error("malformed integer literal `" + literal + "`");
+                die("malformed integer literal `" + literal + "`");
             }
             catch (const out_of_range &err)
             {
-                throw runtime_error("integer literal `" + literal + "` is out of range");
+                die("integer literal `" + literal + "` is out of range");
             }
             tokens.push_back(current);
         }
@@ -85,6 +85,11 @@ void Tokenizer::tokenize()
             get<string>(current.value) += reader.consume();
         }
         else // Something went very wrong
-            throw runtime_error("could not determine token type");
+            die("could not determine token type");
     }
+}
+
+void Tokenizer::die(const string &message)
+{
+    throw runtime_error(to_string(reader.get_line()) + ":" + to_string(reader.get_column()) + ": error: " + message);
 }

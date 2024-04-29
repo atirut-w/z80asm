@@ -33,4 +33,5 @@ public:
     Tokenizer(std::shared_ptr<std::istream> stream);
     const InputReader &get_reader() { return reader; }
     void tokenize();
+    void die(const std::string &message);
 };
