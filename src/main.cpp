@@ -3,7 +3,7 @@
 #include <iostream>
 #include <filesystem>
 #include <fstream>
-#include <tokenizer.hpp>
+#include <parser.hpp>
 
 using namespace std;
 using namespace argparse;
@@ -41,29 +41,16 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    Tokenizer tokenizer(input);
-    try
-    {
-        tokenizer.tokenize();
-    }
-    catch (const runtime_error &err)
-    {
-        cout << filesystem::absolute(abs_path).string() << ":" << err.what() << endl;
-        return 1;
-    }
+    Parser parser;
+    parser.parse(*input);
 
-    // Dump tokens
-    for (auto token : tokenizer.tokens)
+    if (!parser.errors.empty())
     {
-        cout << token.line << ":" << token.column << ":" << token.type << ": ";
-        if (token.value.index() == 0)
+        for (const auto &error : parser.errors)
         {
-            cout << get<string>(token.value) << endl;
+            cout << abs_path << ":" << error << endl;
         }
-        else
-        {
-            cout << get<int>(token.value) << endl;
-        }
+        return 1;
     }
 
     return 0;
