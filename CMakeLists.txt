@@ -8,6 +8,7 @@ add_executable("z80asm"
     "src/main.cpp"
     "src/input_reader.cpp"
     "src/tokenizer.cpp"
+    "src/parser.cpp"
 )
 target_compile_features("z80asm" PRIVATE cxx_std_17)
 target_include_directories("z80asm" PRIVATE "include")
