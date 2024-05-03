@@ -33,10 +33,11 @@ int main(int argc, char **argv)
 {
     auto args = parse_arguments(argc, argv);
 
-    auto input = make_shared<ifstream>(args->get<string>("input"));
+    string abs_path = filesystem::absolute(args->get<string>("input")).string();
+    auto input = make_shared<ifstream>(abs_path);
     if (!*input)
     {
-        cout << "error: could not open `" << args->get<string>("input") << "` for reading" << endl;
+        cout << "error: could not open `" << abs_path << "` for reading" << endl;
         return 1;
     }
 
@@ -48,7 +49,7 @@ int main(int argc, char **argv)
     catch (const runtime_error &err)
     {
         auto reader = tokenizer.get_reader();
-        cout << filesystem::absolute(args->get<string>("input")).string() << ":" << err.what() << endl;
+        cout << filesystem::absolute(abs_path).string() << ":" << err.what() << endl;
         return 1;
     }
 
