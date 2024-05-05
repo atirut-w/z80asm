@@ -10,6 +10,7 @@ struct Token
     enum Type
     {
         TYPE_UNKNOWN,
+        TYPE_EOF,
         TYPE_IDENT,
         TYPE_NEWLINE,
         TYPE_COLON,

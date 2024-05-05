@@ -87,6 +87,11 @@ void Tokenizer::tokenize()
         else // Something went very wrong
             die("could not determine token type");
     }
+    Token eof;
+    eof.type = Token::TYPE_EOF;
+    eof.line = reader.get_line();
+    eof.column = reader.get_column();
+    tokens.push_back(eof);
 }
 
 void Tokenizer::die(const string &message)
