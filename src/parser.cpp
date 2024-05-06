@@ -24,5 +24,9 @@ void Parser::parse(istream &stream)
             statements.push_back(make_shared<Label>(boost::trim_copy(label)));
             line = line.substr(line.find_first_of(':') + 1);
         }
+
+        boost::trim(line);
+        if (line.empty())
+            continue;
     }
 }
