@@ -46,8 +46,8 @@ int main(int argc, char **argv)
     Tokenizer tokenizer(input);
     tokenizer.tokenize();
 
-    Parser parser;
-    parser.parse(tokenizer.tokens);
+    Parser parser(tokenizer.tokens);
+    parser.parse();
 
     if (!parser.errors.empty())
     {
@@ -56,6 +56,14 @@ int main(int argc, char **argv)
             cout << abs_path << ":" << error << endl;
         }
         return 1;
+    }
+
+    for (const auto statement : parser.statements)
+    {
+        if (auto label = dynamic_pointer_cast<Label>(statement))
+        {
+            cout << "Label: " << label->name << endl;
+        }
     }
 
     return 0;

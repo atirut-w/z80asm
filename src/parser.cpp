@@ -4,32 +4,28 @@
 
 using namespace std;
 
-int recover(int cur, const std::vector<Token> &tokens)
+void Parser::error(const std::string &message)
 {
-    while (cur < tokens.size() && tokens[cur].type != Token::TYPE_NEWLINE)
+    errors.push_back(to_string(tokens[cur].line) + ":" + to_string(tokens[cur].column) + ": error: " + message);
+
+    // Recover from error
+    while (cur < tokens.size() - 1 && tokens[cur].type != Token::TYPE_NEWLINE)
         cur++;
-    return cur;
 }
 
-void Parser::error(const Token &ctx, const std::string &message)
+void Parser::parse()
 {
-    errors.push_back(to_string(ctx.line) + ":" + to_string(ctx.column) + ": error: " + message);
-}
-
-void Parser::parse(const std::vector<Token> tokens)
-{
-    for (int cur = 0; cur < tokens.size() - 1; cur++)
+    for (cur = 0; cur < tokens.size() - 1; cur++)
     {
         if (tokens[cur].type == Token::TYPE_NEWLINE) // Blank line, this is
             continue;
         
         if (tokens[cur].type != Token::TYPE_IDENT) // A line always begin with a name for label or instruction... for now.
         {
-            error(tokens[cur], "expected label or instruction");
-            cur = recover(cur, tokens);
+            error("expected label or instruction");
             continue;
         }
         
-        error(tokens[cur], "TODO: implement parsing");
+        error("TODO: implement parsing");
     }
 }

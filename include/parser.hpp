@@ -20,11 +20,16 @@ struct Label : Statement
 class Parser
 {
 private:
-    void error(const Token &ctx, const std::string &message);
+    std::vector<Token> tokens;
+    int cur;
+
+    void error(const std::string &message);
+    void recover();
 
 public:
     std::vector<std::shared_ptr<Statement>> statements;
     std::vector<std::string> errors;
 
-    void parse(const std::vector<Token> tokens);
+    Parser(const std::vector<Token> tokens) : tokens(tokens) {}
+    void parse();
 };
