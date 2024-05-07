@@ -3,6 +3,7 @@
 #include <vector>
 #include <istream>
 #include <memory>
+#include <tokenizer.hpp>
 
 struct Statement
 {
@@ -19,13 +20,11 @@ struct Label : Statement
 class Parser
 {
 private:
-    int nlines = 1;
-
-    void error(const std::string &message);
+    void error(const Token &ctx, const std::string &message);
 
 public:
     std::vector<std::shared_ptr<Statement>> statements;
     std::vector<std::string> errors;
 
-    void parse(std::istream &stream);
+    void parse(const std::vector<Token> tokens);
 };

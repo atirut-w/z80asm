@@ -4,29 +4,15 @@
 
 using namespace std;
 
-void Parser::error(const string &message)
+void Parser::error(const Token &ctx, const std::string &message)
 {
-    errors.push_back(to_string(nlines) + ": error: " + message);
+    errors.push_back(to_string(ctx.line) + ":" + to_string(ctx.column) + ": error: " + message);
 }
 
-void Parser::parse(istream &stream)
+void Parser::parse(const std::vector<Token> tokens)
 {
-    for (string line; getline(stream, line); nlines++)
+    for (int cur = 0; cur < tokens.size(); cur++)
     {
-        // Dev note: we strip comment and check for label first so that we can bail out early if there are no instructions
-
-        if (line.find_first_of(';') != string::npos)
-            line = line.substr(0, line.find_first_of(';'));
-
-        if (line.find_first_of(':') != string::npos)
-        {
-            string label = line.substr(0, line.find_first_of(':'));
-            statements.push_back(make_shared<Label>(boost::trim_copy(label)));
-            line = line.substr(line.find_first_of(':') + 1);
-        }
-
-        boost::trim(line);
-        if (line.empty())
-            continue;
+        error(tokens[cur], "TODO: implement parsing");
     }
 }

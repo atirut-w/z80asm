@@ -3,6 +3,8 @@
 #include <iostream>
 #include <filesystem>
 #include <fstream>
+
+#include <tokenizer.hpp>
 #include <parser.hpp>
 
 using namespace std;
@@ -41,8 +43,11 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    Tokenizer tokenizer(input);
+    tokenizer.tokenize();
+
     Parser parser;
-    parser.parse(*input);
+    parser.parse(tokenizer.tokens);
 
     if (!parser.errors.empty())
     {
