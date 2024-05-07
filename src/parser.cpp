@@ -22,10 +22,21 @@ void Parser::parse()
         
         if (tokens[cur].type != Token::TYPE_IDENT) // A line always begin with a name for label or instruction... for now.
         {
-            error("expected label or instruction");
+            error("expected identifier");
             continue;
         }
         
-        error("TODO: implement parsing");
+        if (tokens[cur + 1].type == Token::TYPE_COLON)
+        {
+            error("TODO: parse label");
+        }
+        else if (tokens[cur + 1].type == Token::TYPE_IDENT || tokens[cur + 1].type == Token::TYPE_NUMBER || tokens[cur + 1].type == Token::TYPE_PAREN || tokens[cur + 1].type == Token::TYPE_NEWLINE)
+        {
+            error("TODO: parse instruction");
+        }
+        else
+        {
+            error("expected colon or identifier");
+        }
     }
 }
