@@ -28,7 +28,8 @@ void Parser::parse()
         
         if (tokens[cur + 1].type == Token::TYPE_COLON)
         {
-            error("TODO: parse label");
+            statements.push_back(make_shared<Label>(get<string>(tokens[cur].value)));
+            cur++;
         }
         else if (tokens[cur + 1].type == Token::TYPE_IDENT || tokens[cur + 1].type == Token::TYPE_NUMBER || tokens[cur + 1].type == Token::TYPE_PAREN || tokens[cur + 1].type == Token::TYPE_NEWLINE)
         {

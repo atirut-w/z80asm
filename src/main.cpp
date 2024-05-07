@@ -55,7 +55,7 @@ int main(int argc, char **argv)
         {
             cout << abs_path << ":" << error << endl;
         }
-        return 1;
+        // return 1;
     }
 
     for (const auto statement : parser.statements)
