@@ -48,7 +48,6 @@ int main(int argc, char **argv)
     }
     catch (const runtime_error &err)
     {
-        auto reader = tokenizer.get_reader();
         cout << filesystem::absolute(abs_path).string() << ":" << err.what() << endl;
         return 1;
     }
