@@ -37,6 +37,7 @@ void Parser::parse()
         }
         else
         {
+            cur++;
             error("expected colon or identifier");
         }
     }
