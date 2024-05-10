@@ -44,7 +44,15 @@ int main(int argc, char **argv)
     }
 
     Tokenizer tokenizer(input);
-    tokenizer.tokenize();
+    try
+    {
+        tokenizer.tokenize();
+    }
+    catch (const runtime_error &err)
+    {
+        cout << filesystem::absolute(abs_path).string() << ":" << err.what() << endl;
+        return 1;
+    }
 
     Parser parser(tokenizer.tokens);
     parser.parse();
