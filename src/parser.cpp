@@ -1,8 +1,13 @@
 #include <parser.hpp>
 #include <boost/algorithm/string.hpp>
 #include <iostream>
+#include <map>
 
 using namespace std;
+
+const map<string, Mnemonic> mnemonic_map = {
+    {"ld", Mnemonic::LD},
+};
 
 void Parser::error(const std::string &message)
 {
@@ -37,21 +42,70 @@ void Parser::parse()
             consume();
             continue;
         }
-        
         if (peek().type != Token::TYPE_IDENT) // A line always begin with a name for label or instruction... for now.
         {
             error("expected identifier");
             continue;
         }
 
-        if (peek(1).type == Token::TYPE_COLON)
+        auto ident_tk = consume();
+        if (peek().type == Token::TYPE_COLON)
         {
-            statements.push_back(make_shared<Label>(get<string>(consume().value)));
+            statements.push_back(make_shared<Label>(get<string>(ident_tk.value)));
             consume();
         }
-        else if (peek(1).type == Token::TYPE_IDENT || peek(1).type == Token::TYPE_NUMBER || peek(1).type == Token::TYPE_PAREN || peek(1).type == Token::TYPE_NEWLINE)
+        else if (peek().type == Token::TYPE_IDENT || peek().type == Token::TYPE_NUMBER || peek().type == Token::TYPE_PAREN || peek().type == Token::TYPE_NEWLINE)
         {
-            error("TODO: parse instruction");
+            Instruction instruction;
+
+            auto mnemonic_iter = mnemonic_map.find(boost::to_lower_copy(get<string>(ident_tk.value)));
+            if (mnemonic_iter == mnemonic_map.end())
+            {
+                error("unrecognized instruction `" + get<string>(ident_tk.value) + "`");
+                continue;
+            }
+            instruction.mnemonic = mnemonic_iter->second;
+
+            while (peek().type != Token::TYPE_NEWLINE && peek().type != Token::TYPE_EOF)
+            {
+                Operand operand;
+                
+                if (peek().type == Token::TYPE_PAREN)
+                {
+                    if (get<string>(peek().value) == ")")
+                    {
+                        error("unexpected closing parenthesis");
+                        break;
+                    }
+                    operand.indirect = true;
+                    consume();
+                }
+
+                if (peek().type != Token::TYPE_IDENT && peek().type != Token::TYPE_NUMBER)
+                {
+                    error("expected identifier or number");
+                    break;
+                }
+                operand.value = consume().value;
+
+                if (operand.indirect)
+                {
+                    if (peek().type != Token::TYPE_PAREN)
+                    {
+                        error("expected closing parenthesis");
+                        break;
+                    }
+                    else if (get<string>(peek().value) == "(")
+                    {
+                        error("unexpected opening parenthesis");
+                        break;
+                    }
+                    consume();
+                }
+
+                if (peek().type == Token::TYPE_COMMA)
+                    consume();
+            }
         }
         else
         {

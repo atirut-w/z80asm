@@ -4,6 +4,7 @@
 #include <istream>
 #include <memory>
 #include <tokenizer.hpp>
+#include <variant>
 
 struct Statement
 {
@@ -15,6 +16,23 @@ struct Label : Statement
     std::string name;
 
     Label(std::string name) : name(name) {}
+};
+
+enum class Mnemonic
+{
+    LD,
+};
+
+struct Operand
+{
+    std::variant<std::string, int> value;
+    bool indirect = false;
+};
+
+struct Instruction : Statement
+{
+    Mnemonic mnemonic;
+    std::vector<Operand> operands;
 };
 
 class Parser
