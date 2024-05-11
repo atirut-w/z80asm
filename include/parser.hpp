@@ -21,9 +21,12 @@ class Parser
 {
 private:
     std::vector<Token> tokens;
-    int cur;
+    int cur = 0;
 
     void error(const std::string &message);
+    const Token& consume();
+    const Token& peek();
+    const Token& peek(int offset);
 
 public:
     std::vector<std::shared_ptr<Statement>> statements;

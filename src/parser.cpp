@@ -13,31 +13,49 @@ void Parser::error(const std::string &message)
         cur++;
 }
 
+const Token& Parser::consume()
+{
+    return tokens[cur++];
+}
+
+const Token& Parser::peek()
+{
+    return tokens[cur];
+}
+
+const Token& Parser::peek(int offset)
+{
+    return tokens[cur + offset];
+}
+
 void Parser::parse()
 {
-    for (cur = 0; cur < tokens.size() - 1; cur++)
+    while (peek().type != Token::TYPE_EOF)
     {
-        if (tokens[cur].type == Token::TYPE_NEWLINE) // Blank line, this is
+        if (peek().type == Token::TYPE_NEWLINE) // Blank line, this is
+        {
+            consume();
             continue;
+        }
         
-        if (tokens[cur].type != Token::TYPE_IDENT) // A line always begin with a name for label or instruction... for now.
+        if (peek().type != Token::TYPE_IDENT) // A line always begin with a name for label or instruction... for now.
         {
             error("expected identifier");
             continue;
         }
-        
-        if (tokens[cur + 1].type == Token::TYPE_COLON)
+
+        if (peek(1).type == Token::TYPE_COLON)
         {
-            statements.push_back(make_shared<Label>(get<string>(tokens[cur].value)));
-            cur++;
+            statements.push_back(make_shared<Label>(get<string>(consume().value)));
+            consume();
         }
-        else if (tokens[cur + 1].type == Token::TYPE_IDENT || tokens[cur + 1].type == Token::TYPE_NUMBER || tokens[cur + 1].type == Token::TYPE_PAREN || tokens[cur + 1].type == Token::TYPE_NEWLINE)
+        else if (peek(1).type == Token::TYPE_IDENT || peek(1).type == Token::TYPE_NUMBER || peek(1).type == Token::TYPE_PAREN || peek(1).type == Token::TYPE_NEWLINE)
         {
             error("TODO: parse instruction");
         }
         else
         {
-            cur++;
+            consume(); // Correct position
             error("expected colon or identifier");
         }
     }
