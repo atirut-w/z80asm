@@ -83,6 +83,7 @@ void Tokenizer::tokenize()
         {
             current.type = Token::TYPE_PAREN;
             get<string>(current.value) += reader.consume();
+            tokens.push_back(current);
         }
         else // Something went very wrong
             die("could not determine token type");
