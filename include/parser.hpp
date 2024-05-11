@@ -24,7 +24,6 @@ private:
     int cur;
 
     void error(const std::string &message);
-    void recover();
 
 public:
     std::vector<std::shared_ptr<Statement>> statements;
