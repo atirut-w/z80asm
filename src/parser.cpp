@@ -56,7 +56,7 @@ void Parser::parse()
         }
         else if (peek().type == Token::TYPE_IDENT || peek().type == Token::TYPE_NUMBER || peek().type == Token::TYPE_PAREN || peek().type == Token::TYPE_NEWLINE)
         {
-            Instruction instruction;
+            auto instruction = make_shared<Instruction>();
 
             auto mnemonic_iter = mnemonic_map.find(boost::to_lower_copy(get<string>(ident_tk.value)));
             if (mnemonic_iter == mnemonic_map.end())
@@ -64,7 +64,7 @@ void Parser::parse()
                 error("unrecognized instruction `" + get<string>(ident_tk.value) + "`");
                 continue;
             }
-            instruction.mnemonic = mnemonic_iter->second;
+            instruction->mnemonic = mnemonic_iter->second;
 
             while (peek().type != Token::TYPE_NEWLINE && peek().type != Token::TYPE_EOF)
             {
@@ -105,7 +105,11 @@ void Parser::parse()
 
                 if (peek().type == Token::TYPE_COMMA)
                     consume();
+
+                instruction->operands.push_back(operand);
             }
+
+            statements.push_back(instruction);
         }
         else
         {
