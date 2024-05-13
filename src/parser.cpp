@@ -7,6 +7,45 @@ using namespace std;
 
 const map<string, Mnemonic> mnemonic_map = {
     {"ld", Mnemonic::LD},
+    {"push", Mnemonic::PUSH},
+    {"pop", Mnemonic::POP},
+
+    {"ex", Mnemonic::EX},
+    {"exx", Mnemonic::EXX},
+    {"ldi", Mnemonic::LDI},
+    {"ldir", Mnemonic::LDIR},
+    {"ldd", Mnemonic::LDD},
+    {"lddr", Mnemonic::LDDR},
+    {"cpi", Mnemonic::CPI},
+    {"cpir", Mnemonic::CPIR},
+    {"cpd", Mnemonic::CPD},
+    {"cpdr", Mnemonic::CPDR},
+
+    {"add", Mnemonic::ADD},
+    {"adc", Mnemonic::ADC},
+    {"sub", Mnemonic::SUB},
+    {"sbc", Mnemonic::SBC},
+    {"and", Mnemonic::AND},
+    {"or", Mnemonic::OR},
+    {"xor", Mnemonic::XOR},
+    {"cp", Mnemonic::CP},
+    {"inc", Mnemonic::INC},
+    {"dec", Mnemonic::DEC},
+
+    {"jp", Mnemonic::JP},
+    {"jr", Mnemonic::JR},
+    {"djnz", Mnemonic::DJNZ},
+
+    {"in", Mnemonic::IN},
+    {"ini", Mnemonic::INI},
+    {"inir", Mnemonic::INIR},
+    {"ind", Mnemonic::IND},
+    {"indr", Mnemonic::INDR},
+    {"out", Mnemonic::OUT},
+    {"outi", Mnemonic::OUTI},
+    {"otir", Mnemonic::OTIR},
+    {"outd", Mnemonic::OUTD},
+    {"outdr", Mnemonic::OUTDR},
 };
 
 void Parser::error(const std::string &message)
