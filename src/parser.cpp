@@ -87,13 +87,13 @@ void Parser::parse()
             continue;
         }
 
-        auto ident_tk = consume();
-        if (peek().type == Token::TYPE_COLON)
+        auto ident_tk = peek();
+        if (peek(1).type == Token::TYPE_COLON)
         {
-            statements.push_back(make_shared<Label>(get<string>(ident_tk.value)));
+            statements.push_back(make_shared<Label>(get<string>(consume().value)));
             consume();
         }
-        else if (peek().type == Token::TYPE_IDENT || peek().type == Token::TYPE_NUMBER || peek().type == Token::TYPE_PAREN || peek().type == Token::TYPE_NEWLINE)
+        else if (peek(1).type == Token::TYPE_IDENT || peek(1).type == Token::TYPE_NUMBER || peek(1).type == Token::TYPE_PAREN || peek(1).type == Token::TYPE_NEWLINE)
         {
             auto instruction = make_shared<Instruction>();
 
