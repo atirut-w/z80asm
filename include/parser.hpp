@@ -8,6 +8,9 @@
 
 struct Statement
 {
+    int line = 1;
+    int column = 1;
+
     virtual ~Statement() = default; // Force polymorphism for casting to derived types
 };
 

@@ -45,14 +45,19 @@ void Parser::parse()
         }
 
         auto ident_tk = peek();
+
         if (peek(1).type == Token::TYPE_COLON)
         {
-            statements.push_back(make_shared<Label>(get<string>(consume().value)));
+            auto label = make_shared<Label>(get<string>(consume().value));
+            label->line = ident_tk.line;
+            label->column = ident_tk.column;
             consume();
         }
         else if (peek(1).type == Token::TYPE_IDENT || peek(1).type == Token::TYPE_NUMBER || peek(1).type == Token::TYPE_PAREN || peek(1).type == Token::TYPE_NEWLINE)
         {
             auto instruction = make_shared<Instruction>();
+            instruction->line = ident_tk.line;
+            instruction->column = ident_tk.column;
             instruction->mnemonic = boost::to_lower_copy(get<string>(ident_tk.value));
 
             while (peek().type != Token::TYPE_NEWLINE && peek().type != Token::TYPE_EOF)
