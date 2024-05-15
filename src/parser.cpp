@@ -14,17 +14,17 @@ void Parser::error(const std::string &message)
         cur++;
 }
 
-const Token& Parser::consume()
+const Token &Parser::consume()
 {
     return tokens[cur++];
 }
 
-const Token& Parser::peek()
+const Token &Parser::peek()
 {
     return tokens[cur];
 }
 
-const Token& Parser::peek(int offset)
+const Token &Parser::peek(int offset)
 {
     return tokens[cur + offset];
 }
@@ -63,7 +63,7 @@ void Parser::parse()
             while (peek().type != Token::TYPE_NEWLINE && peek().type != Token::TYPE_EOF)
             {
                 Operand operand;
-                
+
                 if (peek().type == Token::TYPE_PAREN)
                 {
                     if (get<string>(peek().value) == ")")
