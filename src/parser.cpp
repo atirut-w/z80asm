@@ -5,49 +5,6 @@
 
 using namespace std;
 
-const map<string, Mnemonic> mnemonic_map = {
-    {"ld", Mnemonic::LD},
-    {"push", Mnemonic::PUSH},
-    {"pop", Mnemonic::POP},
-
-    {"ex", Mnemonic::EX},
-    {"exx", Mnemonic::EXX},
-    {"ldi", Mnemonic::LDI},
-    {"ldir", Mnemonic::LDIR},
-    {"ldd", Mnemonic::LDD},
-    {"lddr", Mnemonic::LDDR},
-    {"cpi", Mnemonic::CPI},
-    {"cpir", Mnemonic::CPIR},
-    {"cpd", Mnemonic::CPD},
-    {"cpdr", Mnemonic::CPDR},
-
-    {"add", Mnemonic::ADD},
-    {"adc", Mnemonic::ADC},
-    {"sub", Mnemonic::SUB},
-    {"sbc", Mnemonic::SBC},
-    {"and", Mnemonic::AND},
-    {"or", Mnemonic::OR},
-    {"xor", Mnemonic::XOR},
-    {"cp", Mnemonic::CP},
-    {"inc", Mnemonic::INC},
-    {"dec", Mnemonic::DEC},
-
-    {"jp", Mnemonic::JP},
-    {"jr", Mnemonic::JR},
-    {"djnz", Mnemonic::DJNZ},
-
-    {"in", Mnemonic::IN},
-    {"ini", Mnemonic::INI},
-    {"inir", Mnemonic::INIR},
-    {"ind", Mnemonic::IND},
-    {"indr", Mnemonic::INDR},
-    {"out", Mnemonic::OUT},
-    {"outi", Mnemonic::OUTI},
-    {"otir", Mnemonic::OTIR},
-    {"outd", Mnemonic::OUTD},
-    {"outdr", Mnemonic::OUTDR},
-};
-
 void Parser::error(const std::string &message)
 {
     errors.push_back(to_string(tokens[cur].line) + ":" + to_string(tokens[cur].column) + ": error: " + message);
@@ -96,14 +53,7 @@ void Parser::parse()
         else if (peek(1).type == Token::TYPE_IDENT || peek(1).type == Token::TYPE_NUMBER || peek(1).type == Token::TYPE_PAREN || peek(1).type == Token::TYPE_NEWLINE)
         {
             auto instruction = make_shared<Instruction>();
-
-            auto mnemonic_iter = mnemonic_map.find(boost::to_lower_copy(get<string>(ident_tk.value)));
-            if (mnemonic_iter == mnemonic_map.end())
-            {
-                error("unrecognized instruction `" + get<string>(ident_tk.value) + "`");
-                continue;
-            }
-            instruction->mnemonic = mnemonic_iter->second;
+            instruction->mnemonic = boost::to_lower_copy(get<string>(ident_tk.value));
 
             while (peek().type != Token::TYPE_NEWLINE && peek().type != Token::TYPE_EOF)
             {

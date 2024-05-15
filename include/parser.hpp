@@ -18,55 +18,6 @@ struct Label : Statement
     Label(std::string name) : name(name) {}
 };
 
-enum class Mnemonic
-{
-    // Load group
-    LD,
-    PUSH,
-    POP,
-
-    // Exchange, block transfer, and search
-    EX,
-    EXX,
-    LDI,
-    LDIR,
-    LDD,
-    LDDR,
-    CPI,
-    CPIR,
-    CPD,
-    CPDR,
-
-    // 8-bit arithmetic
-    ADD,
-    ADC,
-    SUB,
-    SBC,
-    AND,
-    OR,
-    XOR,
-    CP,
-    INC,
-    DEC,
-
-    // Jump group
-    JP,
-    JR,
-    DJNZ,
-
-    // I/O group
-    IN,
-    INI,
-    INIR,
-    IND,
-    INDR,
-    OUT,
-    OUTI,
-    OTIR,
-    OUTD,
-    OUTDR,
-};
-
 struct Operand
 {
     std::variant<std::string, int> value;
@@ -75,7 +26,7 @@ struct Operand
 
 struct Instruction : Statement
 {
-    Mnemonic mnemonic;
+    std::string mnemonic;
     std::vector<Operand> operands;
 };
 
