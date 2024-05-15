@@ -3,7 +3,9 @@
 #include <iostream>
 #include <filesystem>
 #include <fstream>
+
 #include <tokenizer.hpp>
+#include <parser.hpp>
 
 using namespace std;
 using namespace argparse;
@@ -52,17 +54,23 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    // Dump tokens
-    for (auto token : tokenizer.tokens)
+    Parser parser(tokenizer.tokens);
+    parser.parse();
+
+    if (!parser.errors.empty())
     {
-        cout << token.line << ":" << token.column << ":" << token.type << ": ";
-        if (token.value.index() == 0)
+        for (const auto &error : parser.errors)
         {
-            cout << get<string>(token.value) << endl;
+            cout << abs_path << ":" << error << endl;
         }
-        else
+        // return 1;
+    }
+
+    for (const auto statement : parser.statements)
+    {
+        if (auto label = dynamic_pointer_cast<Label>(statement))
         {
-            cout << get<int>(token.value) << endl;
+            cout << "Label: " << label->name << endl;
         }
     }
 
