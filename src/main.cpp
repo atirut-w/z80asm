@@ -3,12 +3,12 @@
 #include <iostream>
 #include <filesystem>
 #include <fstream>
-
-#include <tokenizer.hpp>
-#include <parser.hpp>
+#include <Z80AsmLexer.h>
+#include <Z80AsmParser.h>
 
 using namespace std;
 using namespace argparse;
+using namespace antlr4;
 
 shared_ptr<const ArgumentParser> parse_arguments(int argc, char **argv)
 {
@@ -43,35 +43,15 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    Tokenizer tokenizer(input);
-    try
+    ANTLRInputStream stream(*input);
+    Z80AsmLexer lexer(&stream);
+    CommonTokenStream tokens(&lexer);
+    Z80AsmParser parser(&tokens);
+
+    tree::ParseTree *tree = parser.program();
+    if (lexer.getNumberOfSyntaxErrors() > 0 || parser.getNumberOfSyntaxErrors() > 0)
     {
-        tokenizer.tokenize();
-    }
-    catch (const runtime_error &err)
-    {
-        cout << filesystem::absolute(abs_path).string() << ":" << err.what() << endl;
         return 1;
-    }
-
-    Parser parser(tokenizer.tokens);
-    parser.parse();
-
-    if (!parser.errors.empty())
-    {
-        for (const auto &error : parser.errors)
-        {
-            cout << abs_path << ":" << error << endl;
-        }
-        // return 1;
-    }
-
-    for (const auto statement : parser.statements)
-    {
-        if (auto label = dynamic_pointer_cast<Label>(statement))
-        {
-            cout << "Label: " << label->name << endl;
-        }
     }
 
     return 0;
