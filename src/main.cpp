@@ -3,12 +3,9 @@
 #include <iostream>
 #include <filesystem>
 #include <fstream>
-#include <Z80AsmLexer.h>
-#include <Z80AsmParser.h>
 
 using namespace std;
 using namespace argparse;
-using namespace antlr4;
 
 shared_ptr<const ArgumentParser> parse_arguments(int argc, char **argv)
 {
@@ -40,17 +37,6 @@ int main(int argc, char **argv)
     if (!*input)
     {
         cout << "error: could not open `" << abs_path << "` for reading" << endl;
-        return 1;
-    }
-
-    ANTLRInputStream stream(*input);
-    Z80AsmLexer lexer(&stream);
-    CommonTokenStream tokens(&lexer);
-    Z80AsmParser parser(&tokens);
-
-    tree::ParseTree *tree = parser.program();
-    if (lexer.getNumberOfSyntaxErrors() > 0 || parser.getNumberOfSyntaxErrors() > 0)
-    {
         return 1;
     }
 
