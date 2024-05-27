@@ -3,12 +3,18 @@
 
 using namespace std;
 
+void Parser::error(const string &msg)
+{
+    cerr << nlines << ": " << msg << endl;
+    has_error = true;
+}
+
 vector<shared_ptr<Statement>> Parser::parse(istream &input)
 {
     vector<shared_ptr<Statement>> statements;
 
     string line;
-    for(int nlines = 1; getline(input, line); nlines++)
+    for(nlines = 1; getline(input, line); nlines++)
     {
         if (line.find(';') != string::npos)
             line.erase(line.find(';'));

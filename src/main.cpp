@@ -43,6 +43,8 @@ int main(int argc, char **argv)
 
     Parser parser;
     auto statements = parser.parse(input);
+    if (parser.has_error)
+        return 1;
 
     return 0;
 }

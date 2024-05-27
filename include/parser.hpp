@@ -1,11 +1,11 @@
 #pragma once
 #include <istream>
-#include <ipositional.hpp>
 #include <memory>
 #include <vector>
 
-struct Statement : public IPositional
+struct Statement
 {
+    int line = 1;
     virtual ~Statement() = default; // Force polymorphism
 };
 
@@ -21,6 +21,13 @@ struct Instruction : public Statement
 
 class Parser
 {
+private:
+    int nlines = 1;
+
+    void error(const std::string &msg);
+
 public:
+    bool has_error = false;
+
     std::vector<std::shared_ptr<Statement>> parse(std::istream &input);
 };
