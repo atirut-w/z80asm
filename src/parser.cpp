@@ -38,6 +38,10 @@ vector<shared_ptr<Statement>> Parser::parse(istream &input)
         instruction->line = nlines;
         instruction->mnemonic = line.substr(0, line.find(' '));
         line.erase(0, line.find(' ') + 1);
+
+        // TODO: Parse operands
+
+        statements.push_back(instruction);
     }
     return statements;
 }
