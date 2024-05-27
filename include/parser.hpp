@@ -9,7 +9,7 @@ struct Statement : public IPositional
     virtual ~Statement() = default; // Force polymorphism
 };
 
-class Parser : private IPositional
+class Parser
 {
 public:
     std::vector<std::shared_ptr<Statement>> parse(std::istream &input);
