@@ -9,6 +9,16 @@ struct Statement : public IPositional
     virtual ~Statement() = default; // Force polymorphism
 };
 
+struct Label : public Statement
+{
+    std::string name;
+};
+
+struct Instruction : public Statement
+{
+    std::string mnemonic;
+};
+
 class Parser
 {
 public:
