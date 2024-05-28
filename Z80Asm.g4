@@ -10,7 +10,7 @@ statement
   ;
 
 label
-  : ID ':'
+  : NAME ':'
   ;
 
 instruction: mnemonic operandList?;
@@ -20,9 +20,9 @@ operandList
   ;
 
 operand
-  : ID
-  | INT
-  | HEXINT
+  : NAME
+  | DEC_INT
+  | HEX_INT
   | '(' operand ')'
   ;
 
@@ -100,10 +100,6 @@ mnemonic
 WHITESPACE: [ \t]+ -> skip;
 EOL: '\r'? '\n'; // Keep newlines to properly parse statements
 COMMENT: ';' ~[\r\n]* -> skip;
-
-ID: [a-zA-Z_][a-zA-Z0-9_]*;
-INT: [0-9]+;
-HEXINT: '0x' [0-9a-fA-F]+;
 
 // ----INSTRUCTION MNEUMONICS----
 // N-bit Load Group
@@ -190,3 +186,7 @@ OUTI: 'outi';
 OTIR: 'otir';
 OUTD: 'outd';
 OTDR: 'otdr';
+
+NAME: [a-zA-Z_][a-zA-Z0-9_]*;
+DEC_INT: [0-9]+;
+HEX_INT: '0x' [0-9a-fA-F]+;
