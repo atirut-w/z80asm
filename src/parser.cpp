@@ -1,7 +1,19 @@
 #include <parser.hpp>
 #include <boost/algorithm/string.hpp>
+#include <iostream>
+#include <sstream>
 
 using namespace std;
+
+vector<string> split(const string &str, const char delim)
+{
+    vector<string> result;
+    stringstream ss(str);
+    string item;
+    while (getline(ss, item, delim))
+        result.push_back(item);
+    return result;
+}
 
 void Parser::error(const string &msg)
 {
@@ -39,7 +51,13 @@ vector<shared_ptr<Statement>> Parser::parse(istream &input)
         instruction->mnemonic = line.substr(0, line.find(' '));
         line.erase(0, line.find(' ') + 1);
 
-        // TODO: Parse operands
+        cout << "Mnemonic: " << instruction->mnemonic << endl;
+        cout << "Operands: ";
+        for (auto &operand_str : split(line, ','))
+        {
+            cout << operand_str << ", ";
+        }
+        cout << endl;
 
         statements.push_back(instruction);
     }
