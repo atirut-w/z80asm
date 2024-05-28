@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <fstream>
 #include <parser.hpp>
+#include <assembler.hpp>
 
 using namespace std;
 using namespace argparse;
@@ -47,6 +48,17 @@ int main(int argc, char **argv)
     {
         for (auto &error : parser.errors)
             cerr << abs_path << ":" << error << endl;
+    }
+
+    Assembler assembler;
+    try
+    {
+        assembler.assemble(statements);
+    }
+    catch (const runtime_error &err)
+    {
+        cerr << abs_path << ": error: " << err.what() << endl;
+        return 1;
     }
 
     return 0;
