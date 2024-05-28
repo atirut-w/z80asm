@@ -48,7 +48,7 @@ vector<shared_ptr<Statement>> Parser::parse(istream &input)
         
         auto instruction = make_shared<Instruction>();
         instruction->line = nlines;
-        instruction->mnemonic = line.substr(0, line.find(' '));
+        instruction->mnemonic = boost::to_lower_copy(line.substr(0, line.find(' ')));
         line.erase(0, line.find(' ') + 1);
 
         for (auto &operand_str : split(line, ','))
