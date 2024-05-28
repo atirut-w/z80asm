@@ -18,7 +18,8 @@ struct Operand
 {
     enum class Type
     {
-        Register,
+        Reg8,
+        Reg16,
         Number,
         Name
     } type;

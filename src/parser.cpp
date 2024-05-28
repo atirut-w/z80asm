@@ -5,10 +5,28 @@
 
 using namespace std;
 
-const vector<string> REGISTERS = {
-    "a", "b", "c", "d", "e", "h", "l", "f",
-    "af", "bc", "de", "hl", "sp", "ix", "iy",
-    "i", "r"
+const vector<string> REG8 = {
+    "a",
+    "f",
+    "b",
+    "c",
+    "d",
+    "e",
+    "h",
+    "l",
+
+    "i",
+    "r"
+};
+
+const vector<string> REG16 = {
+    "af",
+    "bc",
+    "de",
+    "hl",
+    "sp",
+    "ix",
+    "iy"
 };
 
 void Parser::error(const string &msg)
@@ -108,9 +126,13 @@ vector<shared_ptr<Statement>> Parser::parse(istream &input)
                     }
                 }
             }
-            else if (find(REGISTERS.begin(), REGISTERS.end(), boost::to_lower_copy(operand_str)) != REGISTERS.end()) // Register
+            else if (find(REG8.begin(), REG8.end(), boost::to_lower_copy(operand_str)) != REG8.end()) // 8-Bit registers
             {
-                operand.type = Operand::Type::Register;
+                operand.type = Operand::Type::Reg8;
+            }
+            else if (find(REG16.begin(), REG16.end(), boost::to_lower_copy(operand_str)) != REG16.end()) // 16-Bit registers
+            {
+                operand.type = Operand::Type::Reg16;
             }
             else if (isalpha(operand_str[0])) // Name
             {
