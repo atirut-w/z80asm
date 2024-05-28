@@ -5,6 +5,12 @@
 
 using namespace std;
 
+const vector<string> REGISTERS = {
+    "a", "b", "c", "d", "e", "h", "l", "f",
+    "af", "bc", "de", "hl", "sp", "ix", "iy",
+    "i", "r"
+};
+
 void Parser::error(const string &msg)
 {
     cerr << nlines << ": " << msg << endl;
@@ -55,7 +61,7 @@ vector<shared_ptr<Statement>> Parser::parse(istream &input)
         {
             boost::trim(operand_str);
             Operand operand;
-            operand.value = operand_str;
+            operand.text = operand_str;
             
             if (operand_str[0] == '(')
             {
@@ -66,10 +72,63 @@ vector<shared_ptr<Statement>> Parser::parse(istream &input)
                 }
                 operand_str = operand_str.substr(1, operand_str.size() - 2);
                 operand.indirect = true;
-                cout << "Indirect " << operand_str << endl;
             }
 
-            // TODO: Detect if operand is a register, number or name
+            // Detect operand type
+            if (isdigit(operand_str[0])) // Integer
+            {
+                operand.type = Operand::Type::Number;
+                if (operand_str[0] == '0' && operand_str.length() > 1)
+                {
+                    if (tolower(operand_str[1]) == 'x')
+                    {
+                        for (size_t i = 2; i < operand_str.length(); i++)
+                        {
+                            if (!isxdigit(operand_str[i]))
+                            {
+                                error("invalid hexadecimal number `" + operand_str + "`");
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        error("invalid non-decimal number `" + operand_str + "`");
+                        break;
+                    }
+                }
+                else
+                {
+                    for (size_t i = 1; i < operand_str.length(); i++)
+                    {
+                        if (!isdigit(operand_str[i]))
+                        {
+                            error("invalid number `" + operand_str + "`");
+                            break;
+                        }
+                    }
+                }
+            }
+            else if (find(REGISTERS.begin(), REGISTERS.end(), boost::to_lower_copy(operand_str)) != REGISTERS.end()) // Register
+            {
+                operand.type = Operand::Type::Register;
+            }
+            else if (isalpha(operand_str[0])) // Name
+            {
+                operand.type = Operand::Type::Name;
+                for (size_t i = 1; i < operand_str.length(); i++)
+                {
+                    if (!isalnum(operand_str[i]) && operand_str[i] != '_')
+                    {
+                        error("invalid name `" + operand_str + "`");
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                error("could not determine operand type for `" + operand_str + "`");
+            }
 
             instruction->operands.push_back(operand);
         }

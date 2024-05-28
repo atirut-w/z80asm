@@ -22,7 +22,7 @@ struct Operand
         Number,
         Name
     } type;
-    std::string value;
+    std::string text;
     bool indirect = false;
 };
 
