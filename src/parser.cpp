@@ -125,7 +125,7 @@ vector<shared_ptr<Statement>> Parser::parse(istream &input)
                     }
                 }
             }
-            else
+            else // TODO: String literal support for pseudo-instructions
             {
                 error("could not determine operand type for `" + operand_str + "`");
             }
