@@ -1,6 +1,2 @@
 .vscode/
 build/
-dist/
-
-# Generated parser
-parser/*
