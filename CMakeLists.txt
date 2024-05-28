@@ -9,12 +9,20 @@ add_subdirectory("3rd/antlr4-cpp-runtime")
 add_custom_command(
     COMMENT "Generating parser"
     MAIN_DEPENDENCY "${CMAKE_SOURCE_DIR}/Z80Asm.g4"
-    OUTPUT "${CMAKE_SOURCE_DIR}/parser/Z80AsmBaseListener.cpp" "${CMAKE_SOURCE_DIR}/parser/Z80AsmBaseListener.h"
-        "${CMAKE_SOURCE_DIR}/parser/Z80AsmLexer.cpp" "${CMAKE_SOURCE_DIR}/parser/Z80AsmLexer.h"
-        "${CMAKE_SOURCE_DIR}/parser/Z80AsmListener.cpp" "${CMAKE_SOURCE_DIR}/parser/Z80AsmListener.h"
-        "${CMAKE_SOURCE_DIR}/parser/Z80AsmParser.cpp" "${CMAKE_SOURCE_DIR}/parser/Z80AsmParser.h"
-    BYPRODUCTS "${CMAKE_SOURCE_DIR}/parser/Z80Asm.interp" "${CMAKE_SOURCE_DIR}/parser/Z80Asm.tokens"
-        "${CMAKE_SOURCE_DIR}/parser/Z80AsmLexer.interp" "${CMAKE_SOURCE_DIR}/parser/Z80AsmLexer.tokens"
+    OUTPUT
+        "${CMAKE_SOURCE_DIR}/parser/Z80AsmBaseListener.h"
+        "${CMAKE_SOURCE_DIR}/parser/Z80AsmBaseListener.cpp"
+        "${CMAKE_SOURCE_DIR}/parser/Z80AsmLexer.h"
+        "${CMAKE_SOURCE_DIR}/parser/Z80AsmLexer.cpp"
+        "${CMAKE_SOURCE_DIR}/parser/Z80AsmListener.h"
+        "${CMAKE_SOURCE_DIR}/parser/Z80AsmListener.cpp"
+        "${CMAKE_SOURCE_DIR}/parser/Z80AsmParser.h"
+        "${CMAKE_SOURCE_DIR}/parser/Z80AsmParser.cpp"
+    BYPRODUCTS
+        "${CMAKE_SOURCE_DIR}/parser/Z80Asm.interp"
+        "${CMAKE_SOURCE_DIR}/parser/Z80Asm.tokens"
+        "${CMAKE_SOURCE_DIR}/parser/Z80AsmLexer.interp"
+        "${CMAKE_SOURCE_DIR}/parser/Z80AsmLexer.tokens"
     COMMAND antlr4 -o "${CMAKE_SOURCE_DIR}/parser" "${CMAKE_SOURCE_DIR}/Z80Asm.g4"
 )
 
