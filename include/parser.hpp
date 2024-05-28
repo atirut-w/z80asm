@@ -41,7 +41,7 @@ private:
     std::vector<std::string> split(const std::string &str, char delim);
 
 public:
-    bool has_error = false;
+    std::vector<std::string> errors;
 
     std::vector<std::shared_ptr<Statement>> parse(std::istream &input);
 };

@@ -43,8 +43,11 @@ int main(int argc, char **argv)
 
     Parser parser;
     auto statements = parser.parse(input);
-    if (parser.has_error)
-        return 1;
+    if (parser.errors.size() > 0)
+    {
+        for (auto &error : parser.errors)
+            cerr << abs_path << ":" << error << endl;
+    }
 
     return 0;
 }

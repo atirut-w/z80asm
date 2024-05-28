@@ -13,8 +13,7 @@ const vector<string> REGISTERS = {
 
 void Parser::error(const string &msg)
 {
-    cerr << nlines << ": " << msg << endl;
-    has_error = true;
+    errors.push_back(to_string(nlines) + ": " + msg);
 }
 
 vector<string> Parser::split(const string &str, const char delim)
