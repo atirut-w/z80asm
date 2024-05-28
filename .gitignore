@@ -4,3 +4,5 @@ build/
 # Generated parser
 parser/*
 .antlr/
+# Can't the ANTLR devs put this in the build dir like everyone else?
+dist/
