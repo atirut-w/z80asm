@@ -5,7 +5,13 @@
 
 using namespace std;
 
-vector<string> split(const string &str, const char delim)
+void Parser::error(const string &msg)
+{
+    cerr << nlines << ": " << msg << endl;
+    has_error = true;
+}
+
+vector<string> Parser::split(const string &str, const char delim)
 {
     vector<string> result;
     stringstream ss(str);
@@ -13,12 +19,6 @@ vector<string> split(const string &str, const char delim)
     while (getline(ss, item, delim))
         result.push_back(item);
     return result;
-}
-
-void Parser::error(const string &msg)
-{
-    cerr << nlines << ": " << msg << endl;
-    has_error = true;
 }
 
 vector<shared_ptr<Statement>> Parser::parse(istream &input)
@@ -51,13 +51,28 @@ vector<shared_ptr<Statement>> Parser::parse(istream &input)
         instruction->mnemonic = line.substr(0, line.find(' '));
         line.erase(0, line.find(' ') + 1);
 
-        cout << "Mnemonic: " << instruction->mnemonic << endl;
-        cout << "Operands: ";
         for (auto &operand_str : split(line, ','))
         {
-            cout << operand_str << ", ";
+            boost::trim(operand_str);
+            Operand operand;
+            operand.value = operand_str;
+            
+            if (operand_str[0] == '(')
+            {
+                if (operand_str[operand_str.size() - 1] != ')')
+                {
+                    error("expected ')' after indirect operand");
+                    break;
+                }
+                operand_str = operand_str.substr(1, operand_str.size() - 2);
+                operand.indirect = true;
+                cout << "Indirect " << operand_str << endl;
+            }
+
+            // TODO: Detect if operand is a register, number or name
+
+            instruction->operands.push_back(operand);
         }
-        cout << endl;
 
         statements.push_back(instruction);
     }

@@ -14,9 +14,22 @@ struct Label : public Statement
     std::string name;
 };
 
+struct Operand
+{
+    enum class Type
+    {
+        Register,
+        Number,
+        Name
+    } type;
+    std::string value;
+    bool indirect = false;
+};
+
 struct Instruction : public Statement
 {
     std::string mnemonic;
+    std::vector<Operand> operands;
 };
 
 class Parser
@@ -25,6 +38,7 @@ private:
     int nlines = 1;
 
     void error(const std::string &msg);
+    std::vector<std::string> split(const std::string &str, char delim);
 
 public:
     bool has_error = false;
