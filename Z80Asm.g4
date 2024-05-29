@@ -121,7 +121,7 @@ mnemonic
 
 // Some basic building blocks
 WHITESPACE: [ \t]+ -> skip;
-EOL: '\r'? '\n'; // Keep newlines to properly parse statements
+EOL: [\r\n]+; // Keep newlines to properly parse statements
 COMMENT: ';' ~[\r\n]* -> skip;
 
 // ----REGISTERS----
