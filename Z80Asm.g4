@@ -23,7 +23,30 @@ operand
   : NAME
   | DEC_INT
   | HEX_INT
+  | reg8
+  | reg16
   | '(' operand ')'
+  ;
+
+reg8
+  : A
+  | F
+  | B
+  | C
+  | D
+  | E
+  | H
+  | L
+  ;
+
+reg16
+  : AF
+  | BC
+  | DE
+  | HL
+  | IX
+  | IY
+  | SP
   ;
 
 mnemonic
@@ -100,6 +123,26 @@ mnemonic
 WHITESPACE: [ \t]+ -> skip;
 EOL: '\r'? '\n'; // Keep newlines to properly parse statements
 COMMENT: ';' ~[\r\n]* -> skip;
+
+// ----REGISTERS----
+// 8-bit registers
+A: 'a';
+F: 'f';
+B: 'b';
+C: 'c';
+D: 'd';
+E: 'e';
+H: 'h';
+L: 'l';
+
+// 16-bit registers
+AF: 'af';
+BC: 'bc';
+DE: 'de';
+HL: 'hl';
+IX: 'ix';
+IY: 'iy';
+SP: 'sp';
 
 // ----INSTRUCTION MNEUMONICS----
 // N-bit Load Group
