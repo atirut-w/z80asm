@@ -10,13 +10,13 @@ statement
   ;
 
 label
-  : NAME ':'
+  : NAME COLON
   ;
 
 instruction: mnemonic operandList?;
 
 operandList
-  : operand (',' operand)*
+  : operand (COMMA operand)*
   ;
 
 operand
@@ -24,7 +24,7 @@ operand
   | number
   | reg8
   | reg16
-  | '(' operand ')'
+  | LPAREN operand RPAREN
   ;
 
 number
@@ -233,6 +233,12 @@ OUTI: 'outi';
 OTIR: 'otir';
 OUTD: 'outd';
 OTDR: 'otdr';
+
+// Misc symbols
+LPAREN: '(';
+RPAREN: ')';
+COLON: ':';
+COMMA: ',';
 
 NAME: [a-zA-Z_][a-zA-Z0-9_]*;
 DEC_INT: [0-9]+;

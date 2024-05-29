@@ -30,7 +30,7 @@ antlrcpp::Any Assembler::visitOperandList(Z80AsmParser::OperandListContext *ctx)
     {
         Operand op;
         
-        if (operand->operand()) // An operand is only nested if it's indirect (see Z80Asm.g4)
+        if (operand->LPAREN())
         {
             op.indirect = true;
             op.operand = operand->operand();
