@@ -1,7 +1,13 @@
 #include <assembler.hpp>
 #include <iostream>
+#include <stdexcept>
 
 using namespace std;
+
+void Assembler::error(antlr4::ParserRuleContext *ctx, const std::string &message)
+{
+    throw runtime_error(to_string(ctx->getStart()->getLine()) + ":" + to_string(ctx->getStart()->getCharPositionInLine()) + ": error: " + message);
+}
 
 antlrcpp::Any Assembler::visitInstruction(Z80AsmParser::InstructionContext *ctx)
 {
