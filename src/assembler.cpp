@@ -5,9 +5,46 @@ using namespace std;
 
 antlrcpp::Any Assembler::visitInstruction(Z80AsmParser::InstructionContext *ctx)
 {
-    cout << "instruction: " << ctx->mnemonic()->getText() << endl;
+    auto mnemonic = ctx->mnemonic()->getText();
+    vector<Operand> operands;
+    if (ctx->operandList())
+    {
+        operands = any_cast<vector<Operand>>(visit(ctx->operandList()));
+    }
+    
+    cout << "Instruction: " << mnemonic << endl;
+    cout << "Operands: " << endl;
+    for (auto operand : operands)
+    {
+        cout << "  " << (operand.indirect ? "Indirect" : "Direct") << ": " << operand.operand->getText() << endl;
+    }
 
     return visitChildren(ctx);
+}
+
+antlrcpp::Any Assembler::visitOperandList(Z80AsmParser::OperandListContext *ctx)
+{
+    vector<Operand> operands;
+
+    for (auto operand : ctx->operand())
+    {
+        Operand op;
+        
+        if (operand->operand()) // An operand is only nested if it's indirect (see Z80Asm.g4)
+        {
+            op.indirect = true;
+            op.operand = operand->operand();
+        }
+        else
+        {
+            op.indirect = false;
+            op.operand = operand;
+        }
+
+        operands.push_back(op);
+    }
+
+    return operands;
 }
 
 void Assembler::assemble(antlr4::tree::ParseTree *tree)
