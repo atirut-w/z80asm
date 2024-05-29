@@ -5,6 +5,7 @@
 #include <fstream>
 #include <Z80AsmLexer.h>
 #include <Z80AsmParser.h>
+#include <assembler.hpp>
 
 using namespace std;
 using namespace argparse;
@@ -53,6 +54,9 @@ int main(int argc, char **argv)
     {
         return 1;
     }
+
+    Assembler assembler;
+    assembler.visit(tree);
 
     return 0;
 }
