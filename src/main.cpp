@@ -34,11 +34,11 @@ int main(int argc, char **argv)
 {
     auto args = parse_arguments(argc, argv);
 
-    string abs_path = filesystem::absolute(args->get<string>("input")).string();
+    auto abs_path = filesystem::absolute(args->get<string>("input"));
     ifstream input(abs_path);
     if (!input)
     {
-        cout << "error: could not open `" << abs_path << "` for reading" << endl;
+        cout << "error: could not open " << abs_path << " for reading" << endl;
         return 1;
     }
 
@@ -47,7 +47,7 @@ int main(int argc, char **argv)
     if (parser.errors.size() > 0)
     {
         for (auto &error : parser.errors)
-            cerr << abs_path << ":" << error << endl;
+            cerr << abs_path.string() << ":" << error << endl;
     }
 
     Assembler assembler;
@@ -57,9 +57,12 @@ int main(int argc, char **argv)
     }
     catch (const runtime_error &err)
     {
-        cerr << abs_path << ": error: " << err.what() << endl;
+        cerr << abs_path.string() << ": error: " << err.what() << endl;
         return 1;
     }
+
+    ofstream output(abs_path.replace_extension(".bin"), ios::binary);
+    output.write(reinterpret_cast<const char *>(assembler.program.data()), assembler.program.size());
 
     return 0;
 }

@@ -6,10 +6,11 @@ class Assembler
 {
 private:
     int pc = 0;
-    std::vector<uint8_t> program;
 
     void error(const std::string &message, int line);
 
 public:
+    std::vector<uint8_t> program;
+    
     void assemble(std::vector<std::shared_ptr<Statement>> &statements);
 };
