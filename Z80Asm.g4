@@ -3,7 +3,9 @@ options {
   language = Cpp;
 }
 
-program: statement* EOF;
+program
+  : statement* EOF
+  ;
 
 statement
   : label? instruction? EOL // TODO: Make trailing newline optional
@@ -13,7 +15,9 @@ label
   : NAME COLON
   ;
 
-instruction: mnemonic operandList?;
+instruction
+  : mnemonic operandList?
+  ;
 
 operandList
   : operand (COMMA operand)*
