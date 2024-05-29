@@ -9,6 +9,11 @@ void Assembler::error(antlr4::ParserRuleContext *ctx, const std::string &message
     throw runtime_error(to_string(ctx->getStart()->getLine()) + ":" + to_string(ctx->getStart()->getCharPositionInLine()) + ": error: " + message);
 }
 
+void Assembler::warning(antlr4::ParserRuleContext *ctx, const std::string &message)
+{
+    cout << to_string(ctx->getStart()->getLine()) << ":" << to_string(ctx->getStart()->getCharPositionInLine()) << ": warning: " << message << endl;
+}
+
 antlrcpp::Any Assembler::visitInstruction(Z80AsmParser::InstructionContext *ctx)
 {
     auto mnemonic = ctx->mnemonic()->getText();
@@ -18,11 +23,20 @@ antlrcpp::Any Assembler::visitInstruction(Z80AsmParser::InstructionContext *ctx)
         operands = any_cast<vector<Operand>>(visit(ctx->operandList()));
     }
     
-    cout << "Instruction: " << mnemonic << endl;
-    cout << "Operands: " << endl;
-    for (auto operand : operands)
+    if (mnemonic == "ld")
     {
-        cout << "  " << (operand.indirect ? "Indirect" : "Direct") << ": " << operand.operand->getText() << endl;
+        if (operands.size() < 2)
+        {
+            error(ctx, "ld instruction requires at least two operands");
+        }
+        
+        if (!operands[0].indirect && operands[0].operand->reg8()) // LD r, *
+        {
+            if (auto number = operands[1].operand->number()) // LD r, n
+            {
+                error(ctx, "TODO: Implement LD r, n"); // TODO: Implement LD r, n
+            }
+        }
     }
 
     return visitChildren(ctx);
