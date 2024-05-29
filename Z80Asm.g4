@@ -21,11 +21,15 @@ operandList
 
 operand
   : NAME
-  | DEC_INT
-  | HEX_INT
+  | number
   | reg8
   | reg16
   | '(' operand ')'
+  ;
+
+number
+  : DEC_INT
+  | HEX_INT
   ;
 
 reg8
