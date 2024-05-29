@@ -3,6 +3,9 @@
 
 class Assembler : public Z80AsmBaseVisitor
 {
-public:
+private:
     virtual antlrcpp::Any visitInstruction(Z80AsmParser::InstructionContext *ctx) override;
+
+public:
+    void assemble(antlr4::tree::ParseTree *tree);
 };

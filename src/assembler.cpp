@@ -9,3 +9,9 @@ antlrcpp::Any Assembler::visitInstruction(Z80AsmParser::InstructionContext *ctx)
 
     return visitChildren(ctx);
 }
+
+void Assembler::assemble(antlr4::tree::ParseTree *tree)
+{
+    visit(tree);
+    // TODO: Solve symbols
+}

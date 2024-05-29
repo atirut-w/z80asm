@@ -56,7 +56,7 @@ int main(int argc, char **argv)
     }
 
     Assembler assembler;
-    assembler.visit(tree);
+    assembler.assemble(tree);
 
     return 0;
 }
