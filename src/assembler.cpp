@@ -132,6 +132,7 @@ void Assembler::assemble(antlr4::tree::ParseTree *tree)
 {
     visit(tree);
     
+    int auto_offset = 0;
     for (auto &pair : sections)
     {
         auto &name = pair.first;
@@ -148,13 +149,15 @@ void Assembler::assemble(antlr4::tree::ParseTree *tree)
 
         auto segment = elf.segments.add();
         segment->set_type(PT_LOAD);
-        segment->set_virtual_address(section.org);
-        segment->set_physical_address(section.org);
+        segment->set_virtual_address(section.org == (uint16_t)-1 ? auto_offset : section.org);
+        segment->set_physical_address(section.org == (uint16_t)-1 ? auto_offset : section.org);
         if (PFLAGS.find(name) != PFLAGS.end())
         {
             segment->set_flags(PFLAGS.at(name));
         }
         segment->set_align(1);
         segment->add_section_index(elf_section->get_index(), elf_section->get_addr_align());
+
+        auto_offset += section.data.size();
     }
 }

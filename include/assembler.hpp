@@ -7,7 +7,7 @@
 struct Section
 {
     std::vector<uint8_t> data;
-    uint16_t org;
+    uint16_t org = -1;
 };
 
 struct Operand
