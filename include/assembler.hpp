@@ -19,6 +19,7 @@ private:
     virtual antlrcpp::Any visitInstruction(Z80AsmParser::InstructionContext *ctx) override;
     virtual antlrcpp::Any visitOperandList(Z80AsmParser::OperandListContext *ctx) override;
     virtual antlrcpp::Any visitOperand(Z80AsmParser::OperandContext *ctx) override;
+    virtual antlrcpp::Any visitNumber(Z80AsmParser::NumberContext *ctx) override;
 
 public:
     std::vector<uint8_t> code;

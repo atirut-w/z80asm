@@ -49,7 +49,7 @@ antlrcpp::Any Assembler::visitInstruction(Z80AsmParser::InstructionContext *ctx)
                     else if (auto number = operands[1].operand->number()) // LD r, n
                     {
                         emit(LD_R_N | (REG8.at(operands[0].operand->getText()) << 3));
-                        emit(stoi(number->getText(), nullptr, 0));
+                        emit(any_cast<int>(visit(number)));
                     }
                 }
             }
@@ -90,6 +90,11 @@ antlrcpp::Any Assembler::visitOperand(Z80AsmParser::OperandContext *ctx)
     }
 
     return operand;
+}
+
+antlrcpp::Any Assembler::visitNumber(Z80AsmParser::NumberContext *ctx)
+{
+    return stoi(ctx->getText(), nullptr, 0);
 }
 
 void Assembler::assemble(antlr4::tree::ParseTree *tree)
