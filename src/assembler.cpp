@@ -31,18 +31,21 @@ antlrcpp::Any Assembler::visitInstruction(Z80AsmParser::InstructionContext *ctx)
             error(ctx, "ld instruction requires at least two operands");
         }
         
-        if (!operands[0].indirect && operands[0].operand->reg8()) // LD r, *
+        if (!operands[0].indirect) // LD rn, *
         {
-            if (!operands[1].indirect)
+            if (operands[0].operand->reg8()) // LD r, *
             {
-                if (auto reg8 = operands[1].operand->reg8()) // LD r, r'
+                if (!operands[1].indirect)
                 {
-                    code.push_back(LD_R_R | (REG8.at(operands[0].operand->getText()) << 3) | REG8.at(reg8->getText()));
-                }
-                else if (auto number = operands[1].operand->number()) // LD r, n
-                {
-                    code.push_back(LD_R_N | (REG8.at(operands[0].operand->getText()) << 3));
-                    code.push_back(stoi(number->getText(), nullptr, 0));
+                    if (auto reg8 = operands[1].operand->reg8()) // LD r, r'
+                    {
+                        code.push_back(LD_R_R | (REG8.at(operands[0].operand->getText()) << 3) | REG8.at(reg8->getText()));
+                    }
+                    else if (auto number = operands[1].operand->number()) // LD r, n
+                    {
+                        code.push_back(LD_R_N | (REG8.at(operands[0].operand->getText()) << 3));
+                        code.push_back(stoi(number->getText(), nullptr, 0));
+                    }
                 }
             }
         }
