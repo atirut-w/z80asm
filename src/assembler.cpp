@@ -50,23 +50,27 @@ antlrcpp::Any Assembler::visitOperandList(Z80AsmParser::OperandListContext *ctx)
 
     for (auto operand : ctx->operand())
     {
-        Operand op;
-        
-        if (operand->LPAREN())
-        {
-            op.indirect = true;
-            op.operand = operand->operand();
-        }
-        else
-        {
-            op.indirect = false;
-            op.operand = operand;
-        }
-
-        operands.push_back(op);
+        operands.push_back(any_cast<Operand>(visit(operand)));
     }
 
     return operands;
+}
+
+antlrcpp::Any Assembler::visitOperand(Z80AsmParser::OperandContext *ctx)
+{
+    Operand operand;
+    if (ctx->LPAREN())
+    {
+        operand.indirect = true;
+        operand.operand = ctx->operand();
+    }
+    else
+    {
+        operand.indirect = false;
+        operand.operand = ctx;
+    }
+
+    return operand;
 }
 
 void Assembler::assemble(antlr4::tree::ParseTree *tree)
