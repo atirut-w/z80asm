@@ -4,6 +4,28 @@
 #include <codegen.hpp>
 
 using namespace std;
+using namespace ELFIO;
+
+const map<string, int> SHFLAGS = {
+    {".text", SHF_ALLOC | SHF_EXECINSTR},
+    {".data", SHF_ALLOC | SHF_WRITE},
+    {".bss", SHF_ALLOC | SHF_WRITE},
+};
+
+const map<string, int> PFLAGS = {
+    {".text", PF_R | PF_X},
+    {".data", PF_R | PF_W},
+    {".bss", PF_R | PF_W},
+};
+
+Assembler::Assembler()
+{
+    elf.create(ELFCLASS32, ELFDATA2LSB);
+    elf.set_type(ET_REL);
+    elf.set_machine(EM_Z80);
+
+    set_section(".text");
+}
 
 void Assembler::error(antlr4::ParserRuleContext *ctx, const std::string &message)
 {
@@ -17,7 +39,16 @@ void Assembler::warning(antlr4::ParserRuleContext *ctx, const std::string &messa
 
 void Assembler::emit(uint8_t byte)
 {
-    code.push_back(byte);
+    current_section->data.push_back(byte);
+}
+
+void Assembler::set_section(const std::string &name)
+{
+    if (sections.find(name) == sections.end())
+    {
+        sections[name] = Section();
+    }
+    current_section = &sections[name];
 }
 
 antlrcpp::Any Assembler::visitInstruction(Z80AsmParser::InstructionContext *ctx)
@@ -100,5 +131,30 @@ antlrcpp::Any Assembler::visitNumber(Z80AsmParser::NumberContext *ctx)
 void Assembler::assemble(antlr4::tree::ParseTree *tree)
 {
     visit(tree);
-    // TODO: Solve symbols
+    
+    for (auto &pair : sections)
+    {
+        auto &name = pair.first;
+        auto &section = pair.second;
+        
+        auto elf_section = elf.sections.add(name);
+        elf_section->set_type(SHT_PROGBITS);
+        if (SHFLAGS.find(name) != SHFLAGS.end())
+        {
+            elf_section->set_flags(SHFLAGS.at(name));
+        }
+        elf_section->set_data(reinterpret_cast<const char *>(section.data.data()), section.data.size());
+        elf_section->set_addr_align(1);
+
+        auto segment = elf.segments.add();
+        segment->set_type(PT_LOAD);
+        segment->set_virtual_address(section.org);
+        segment->set_physical_address(section.org);
+        if (PFLAGS.find(name) != PFLAGS.end())
+        {
+            segment->set_flags(PFLAGS.at(name));
+        }
+        segment->set_align(1);
+        segment->add_section_index(elf_section->get_index(), elf_section->get_addr_align());
+    }
 }

@@ -58,8 +58,7 @@ int main(int argc, char **argv)
     Assembler assembler;
     assembler.assemble(tree);
 
-    ofstream output(abs_path.replace_extension(".bin"), ios::binary);
-    output.write(reinterpret_cast<const char *>(assembler.code.data()), assembler.code.size());
+    assembler.elf.save(abs_path.replace_extension(".o").string());
 
     return 0;
 }
