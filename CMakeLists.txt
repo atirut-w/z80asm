@@ -4,6 +4,7 @@ project("z80asm")
 # Third-party libraries
 add_subdirectory("3rd/argparse")
 add_subdirectory("3rd/antlr4-cpp-runtime")
+add_subdirectory("3rd/elfio")
 
 # ANTLR stuff
 add_custom_command(
@@ -44,4 +45,4 @@ add_executable("z80asm"
 )
 target_compile_features("z80asm" PRIVATE cxx_std_17)
 target_include_directories("z80asm" PRIVATE "include" "parser" "3rd/antlr4-cpp-runtime/runtime/src") # Why does ANTLR do this to me
-target_link_libraries("z80asm" PRIVATE "argparse" antlr4_static)
+target_link_libraries("z80asm" PRIVATE "argparse" "antlr4_static" "elfio")
