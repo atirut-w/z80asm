@@ -59,6 +59,8 @@ antlrcpp::Any Assembler::visitLabel(Z80AsmParser::LabelContext *ctx)
         error(ctx, "symbol '" + name + "' already defined");
     }
     current_section->symbols[name] = current_section->data.size();
+
+    return visitChildren(ctx);
 }
 
 antlrcpp::Any Assembler::visitInstruction(Z80AsmParser::InstructionContext *ctx)
@@ -141,6 +143,8 @@ antlrcpp::Any Assembler::visitNumber(Z80AsmParser::NumberContext *ctx)
 void Assembler::assemble(antlr4::tree::ParseTree *tree)
 {
     visit(tree);
+
+    std::map<std::string, uint16_t> symbols;
     
     int auto_offset = 0;
     for (auto &pair : sections)
@@ -171,6 +175,13 @@ void Assembler::assemble(antlr4::tree::ParseTree *tree)
         }
         segment->set_align(1);
         segment->add_section_index(elf_section->get_index(), elf_section->get_addr_align());
+
+        for (auto &pair : section.symbols)
+        {
+            auto &name = pair.first;
+            auto &offset = pair.second;
+            symbols[name] = offset + section.org;
+        }
 
         auto_offset += section.data.size();
     }
