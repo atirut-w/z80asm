@@ -3,27 +3,58 @@ options {
   language = Cpp;
 }
 
-program: statement* EOF;
+program
+  : statement* EOF
+  ;
 
 statement
   : label? instruction? EOL // TODO: Make trailing newline optional
   ;
 
 label
-  : NAME ':'
+  : NAME COLON
   ;
 
-instruction: mnemonic operandList?;
+instruction
+  : mnemonic operandList?
+  ;
 
 operandList
-  : operand (',' operand)*
+  : operand (COMMA operand)*
   ;
 
 operand
   : NAME
-  | DEC_INT
+  | number
+  | reg8
+  | reg16
+  | LPAREN operand RPAREN
+  ;
+
+number
+  : DEC_INT
   | HEX_INT
-  | '(' operand ')'
+  ;
+
+reg8
+  : A
+  | F
+  | B
+  | C
+  | D
+  | E
+  | H
+  | L
+  ;
+
+reg16
+  : AF
+  | BC
+  | DE
+  | HL
+  | IX
+  | IY
+  | SP
   ;
 
 mnemonic
@@ -98,8 +129,28 @@ mnemonic
 
 // Some basic building blocks
 WHITESPACE: [ \t]+ -> skip;
-EOL: '\r'? '\n'; // Keep newlines to properly parse statements
+EOL: [\r\n]+; // Keep newlines to properly parse statements
 COMMENT: ';' ~[\r\n]* -> skip;
+
+// ----REGISTERS----
+// 8-bit registers
+A: 'a';
+F: 'f';
+B: 'b';
+C: 'c';
+D: 'd';
+E: 'e';
+H: 'h';
+L: 'l';
+
+// 16-bit registers
+AF: 'af';
+BC: 'bc';
+DE: 'de';
+HL: 'hl';
+IX: 'ix';
+IY: 'iy';
+SP: 'sp';
 
 // ----INSTRUCTION MNEUMONICS----
 // N-bit Load Group
@@ -186,6 +237,12 @@ OUTI: 'outi';
 OTIR: 'otir';
 OUTD: 'outd';
 OTDR: 'otdr';
+
+// Misc symbols
+LPAREN: '(';
+RPAREN: ')';
+COLON: ':';
+COMMA: ',';
 
 NAME: [a-zA-Z_][a-zA-Z0-9_]*;
 DEC_INT: [0-9]+;
