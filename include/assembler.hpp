@@ -8,6 +8,7 @@ struct Section
 {
     std::vector<uint8_t> data;
     uint16_t org = -1;
+    std::map<std::string, uint16_t> symbols;
 };
 
 struct Operand
@@ -24,6 +25,7 @@ private:
     void emit(uint8_t byte);
     void set_section(const std::string &name);
 
+    virtual antlrcpp::Any visitLabel(Z80AsmParser::LabelContext *ctx) override;
     virtual antlrcpp::Any visitInstruction(Z80AsmParser::InstructionContext *ctx) override;
     virtual antlrcpp::Any visitOperandList(Z80AsmParser::OperandListContext *ctx) override;
     virtual antlrcpp::Any visitOperand(Z80AsmParser::OperandContext *ctx) override;

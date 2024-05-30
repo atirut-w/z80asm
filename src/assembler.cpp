@@ -51,6 +51,16 @@ void Assembler::set_section(const std::string &name)
     current_section = &sections[name];
 }
 
+antlrcpp::Any Assembler::visitLabel(Z80AsmParser::LabelContext *ctx)
+{
+    auto name = ctx->NAME()->getText();
+    if (current_section->symbols.find(name) != current_section->symbols.end())
+    {
+        error(ctx, "symbol '" + name + "' already defined");
+    }
+    current_section->symbols[name] = current_section->data.size();
+}
+
 antlrcpp::Any Assembler::visitInstruction(Z80AsmParser::InstructionContext *ctx)
 {
     auto mnemonic = ctx->mnemonic()->getText();
