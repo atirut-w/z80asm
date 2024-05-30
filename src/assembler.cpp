@@ -35,7 +35,11 @@ antlrcpp::Any Assembler::visitInstruction(Z80AsmParser::InstructionContext *ctx)
         {
             if (!operands[1].indirect)
             {
-                if (auto number = operands[1].operand->number()) // LD r, n
+                if (auto reg8 = operands[1].operand->reg8()) // LD r, r'
+                {
+                    code.push_back(LD_R_R | (REG8.at(operands[0].operand->getText()) << 3) | REG8.at(reg8->getText()));
+                }
+                else if (auto number = operands[1].operand->number()) // LD r, n
                 {
                     code.push_back(LD_R_N | (REG8.at(operands[0].operand->getText()) << 3));
                     code.push_back(stoi(number->getText()));

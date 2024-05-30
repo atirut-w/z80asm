@@ -4,6 +4,7 @@
 
 enum Opcode
 {
+    LD_R_R = 0b01000000,
     LD_R_N = 0b00000110,
 };
 
