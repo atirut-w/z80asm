@@ -36,11 +36,11 @@ int main(int argc, char **argv)
 {
     auto args = parse_arguments(argc, argv);
 
-    string abs_path = filesystem::absolute(args->get<string>("input")).string();
+    auto abs_path = filesystem::absolute(args->get<string>("input"));
     auto input = make_shared<ifstream>(abs_path);
     if (!*input)
     {
-        cout << "error: could not open `" << abs_path << "` for reading" << endl;
+        cout << "error: could not open " << abs_path << " for reading" << endl;
         return 1;
     }
 
@@ -57,6 +57,9 @@ int main(int argc, char **argv)
 
     Assembler assembler;
     assembler.assemble(tree);
+
+    ofstream output(abs_path.replace_extension(".bin"), ios::binary);
+    output.write(reinterpret_cast<const char *>(assembler.code.data()), assembler.code.size());
 
     return 0;
 }

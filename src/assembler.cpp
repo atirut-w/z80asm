@@ -1,6 +1,7 @@
 #include <assembler.hpp>
 #include <iostream>
 #include <stdexcept>
+#include <codegen.hpp>
 
 using namespace std;
 
@@ -34,7 +35,8 @@ antlrcpp::Any Assembler::visitInstruction(Z80AsmParser::InstructionContext *ctx)
         {
             if (auto number = operands[1].operand->number()) // LD r, n
             {
-                error(ctx, "TODO: Implement LD r, n"); // TODO: Implement LD r, n
+                code.push_back(LD_R_N | (REG8.at(operands[0].operand->getText()) << 3));
+                code.push_back(stoi(number->getText()));
             }
         }
     }
