@@ -15,6 +15,11 @@ void Assembler::warning(antlr4::ParserRuleContext *ctx, const std::string &messa
     cout << to_string(ctx->getStart()->getLine()) << ":" << to_string(ctx->getStart()->getCharPositionInLine()) << ": warning: " << message << endl;
 }
 
+void Assembler::emit(uint8_t byte)
+{
+    code.push_back(byte);
+}
+
 antlrcpp::Any Assembler::visitInstruction(Z80AsmParser::InstructionContext *ctx)
 {
     auto mnemonic = ctx->mnemonic()->getText();
@@ -39,12 +44,12 @@ antlrcpp::Any Assembler::visitInstruction(Z80AsmParser::InstructionContext *ctx)
                 {
                     if (auto reg8 = operands[1].operand->reg8()) // LD r, r'
                     {
-                        code.push_back(LD_R_R | (REG8.at(operands[0].operand->getText()) << 3) | REG8.at(reg8->getText()));
+                        emit(LD_R_R | (REG8.at(operands[0].operand->getText()) << 3) | REG8.at(reg8->getText()));
                     }
                     else if (auto number = operands[1].operand->number()) // LD r, n
                     {
-                        code.push_back(LD_R_N | (REG8.at(operands[0].operand->getText()) << 3));
-                        code.push_back(stoi(number->getText(), nullptr, 0));
+                        emit(LD_R_N | (REG8.at(operands[0].operand->getText()) << 3));
+                        emit(stoi(number->getText(), nullptr, 0));
                     }
                 }
             }

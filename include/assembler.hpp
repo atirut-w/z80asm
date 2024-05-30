@@ -14,6 +14,7 @@ class Assembler : public Z80AsmBaseVisitor
 private:
     void error(antlr4::ParserRuleContext *ctx, const std::string &message);
     void warning(antlr4::ParserRuleContext *ctx, const std::string &message);
+    void emit(uint8_t byte);
 
     virtual antlrcpp::Any visitInstruction(Z80AsmParser::InstructionContext *ctx) override;
     virtual antlrcpp::Any visitOperandList(Z80AsmParser::OperandListContext *ctx) override;
