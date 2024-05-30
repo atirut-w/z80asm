@@ -55,6 +55,10 @@ antlrcpp::Any Assembler::visitInstruction(Z80AsmParser::InstructionContext *ctx)
             }
         }
     }
+    else if (mnemonic == "halt")
+    {
+        emit(HALT);
+    }
 
     return visitChildren(ctx);
 }
