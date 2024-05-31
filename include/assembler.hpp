@@ -8,7 +8,12 @@ struct Section
 {
     std::vector<uint8_t> data;
     uint16_t org = -1;
-    std::map<std::string, uint16_t> symbols;
+};
+
+struct Symbol
+{
+    Section *section;
+    uint16_t offset;
 };
 
 struct Operand
@@ -37,6 +42,7 @@ public:
     ELFIO::elfio elf;
     std::map<std::string, Section> sections;
     Section *current_section = nullptr;
+    std::map<std::string, Symbol> symbols;
 
     void assemble(antlr4::tree::ParseTree *tree);
 };
