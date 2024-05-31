@@ -39,16 +39,21 @@ void Assembler::warning(antlr4::ParserRuleContext *ctx, const std::string &messa
 
 void Assembler::emit(uint8_t byte)
 {
-    current_section->data.push_back(byte);
+    sections[current_section].data.push_back(byte);
 }
 
 void Assembler::set_section(const std::string &name)
 {
-    if (sections.find(name) == sections.end())
+    auto it = find_if(sections.begin(), sections.end(), [&name](const Section &section) { return section.name == name; });
+    if (it == sections.end())
     {
-        sections[name] = Section();
+        sections.push_back({name});
+        current_section = sections.size() - 1;
     }
-    current_section = &sections[name];
+    else
+    {
+        current_section = it - sections.begin();
+    }
 }
 
 antlrcpp::Any Assembler::visitLabel(Z80AsmParser::LabelContext *ctx)
@@ -58,7 +63,7 @@ antlrcpp::Any Assembler::visitLabel(Z80AsmParser::LabelContext *ctx)
     {
         error(ctx, "symbol '" + name + "' already defined");
     }
-    symbols[name] = {current_section, (uint16_t)current_section->data.size()};
+    symbols[name] = {current_section, (uint16_t)sections[current_section].data.size()};
 
     return visitChildren(ctx);
 }
@@ -145,21 +150,18 @@ void Assembler::assemble(antlr4::tree::ParseTree *tree)
     visit(tree);
     
     int auto_offset = 0;
-    for (auto &pair : sections)
+    for (auto &section : sections)
     {
-        auto &name = pair.first;
-        auto &section = pair.second;
         if (section.org == (uint16_t)-1)
         {
-            sections[name].org = auto_offset; // For symbol resolution
             section.org = auto_offset;
         }
         
-        auto elf_section = elf.sections.add(name);
+        auto elf_section = elf.sections.add(section.name);
         elf_section->set_type(SHT_PROGBITS);
-        if (SHFLAGS.find(name) != SHFLAGS.end())
+        if (SHFLAGS.find(section.name) != SHFLAGS.end())
         {
-            elf_section->set_flags(SHFLAGS.at(name));
+            elf_section->set_flags(SHFLAGS.at(section.name));
         }
         elf_section->set_data(reinterpret_cast<const char *>(section.data.data()), section.data.size());
         elf_section->set_addr_align(1);
@@ -168,13 +170,43 @@ void Assembler::assemble(antlr4::tree::ParseTree *tree)
         segment->set_type(PT_LOAD);
         segment->set_virtual_address(section.org);
         segment->set_physical_address(section.org);
-        if (PFLAGS.find(name) != PFLAGS.end())
+        if (PFLAGS.find(section.name) != PFLAGS.end())
         {
-            segment->set_flags(PFLAGS.at(name));
+            segment->set_flags(PFLAGS.at(section.name));
         }
         segment->set_align(1);
         segment->add_section_index(elf_section->get_index(), elf_section->get_addr_align());
 
         auto_offset += section.data.size();
+    }
+
+    if (symbols.size() > 0)
+    {
+        auto symtab = elf.sections.add(".symtab");
+        symtab->set_type(SHT_SYMTAB);
+        symtab->set_info(1);
+        symtab->set_addr_align(4);
+        symtab->set_entry_size(elf.get_default_entry_size(SHT_SYMTAB));
+
+        auto strtab = elf.sections.add(".strtab");
+        strtab->set_type(SHT_STRTAB);
+    
+        auto string_accessor = string_section_accessor(strtab);
+        auto symtab_accessor = symbol_section_accessor(elf, symtab);
+        for (auto &pair : symbols)
+        {
+            auto &name = pair.first;
+            auto &symbol = pair.second;
+
+            symtab_accessor.add_symbol(
+                string_accessor,
+                name.c_str(),
+                sections[symbol.section].org + symbol.offset,
+                0,
+                0,
+                0,
+                symbol.section
+            );
+        }
     }
 }

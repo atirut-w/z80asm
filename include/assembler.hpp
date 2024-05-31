@@ -6,13 +6,14 @@
 
 struct Section
 {
+    std::string name;
     std::vector<uint8_t> data;
     uint16_t org = -1;
 };
 
 struct Symbol
 {
-    Section *section;
+    int section;
     uint16_t offset;
 };
 
@@ -40,8 +41,8 @@ public:
     Assembler();
 
     ELFIO::elfio elf;
-    std::map<std::string, Section> sections;
-    Section *current_section = nullptr;
+    std::vector<Section> sections;
+    int current_section;
     std::map<std::string, Symbol> symbols;
 
     void assemble(antlr4::tree::ParseTree *tree);
