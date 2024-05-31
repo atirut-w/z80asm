@@ -9,6 +9,9 @@ struct Section
     std::string name;
     std::vector<uint8_t> data;
     uint16_t org = -1;
+
+    // For ELF output phase
+    int index;
 };
 
 struct Symbol
