@@ -177,21 +177,22 @@ void Assembler::assemble(antlr4::tree::ParseTree *tree)
         segment->set_align(1);
         segment->add_section_index(elf_section->get_index(), elf_section->get_addr_align());
 
-        cout << "Adding section '" << section.name << "' at offset " << section.org << ", index " << elf_section->get_index() << endl;
         section.index = elf_section->get_index();
         auto_offset += section.data.size();
     }
 
     if (symbols.size() > 0)
     {
+        auto strtab = elf.sections.add(".strtab");
+        strtab->set_type(SHT_STRTAB);
+        strtab->set_entry_size(elf.get_default_entry_size(SHT_STRTAB));
+
         auto symtab = elf.sections.add(".symtab");
         symtab->set_type(SHT_SYMTAB);
         symtab->set_info(1);
+        symtab->set_link(strtab->get_index());
         symtab->set_addr_align(4);
         symtab->set_entry_size(elf.get_default_entry_size(SHT_SYMTAB));
-
-        auto strtab = elf.sections.add(".strtab");
-        strtab->set_type(SHT_STRTAB);
     
         auto string_accessor = string_section_accessor(strtab);
         auto symtab_accessor = symbol_section_accessor(elf, symtab);
@@ -200,16 +201,13 @@ void Assembler::assemble(antlr4::tree::ParseTree *tree)
             auto &name = pair.first;
             auto &symbol = pair.second;
 
-            cout << "Adding symbol '" << name << "', value " << sections[symbol.section].org + symbol.offset << ", section " << symbol.section << ", index " << sections[symbol.section].index << endl;
-
             symtab_accessor.add_symbol(
                 string_accessor,
                 name.c_str(),
                 sections[symbol.section].org + symbol.offset,
-                1,
-                STB_LOCAL,
-                STT_FUNC,
                 0,
+                STT_NOTYPE,
+                STV_DEFAULT,
                 sections[symbol.section].index
             );
         }
