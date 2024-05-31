@@ -197,7 +197,6 @@ void Assembler::assemble(antlr4::tree::ParseTree *tree)
         symtab->set_type(SHT_SYMTAB);
         symtab->set_info(symbols.size() + 1); // Wtf?
         symtab->set_link(strtab->get_index());
-        symtab->set_addr_align(4);
         symtab->set_entry_size(elf.get_default_entry_size(SHT_SYMTAB));
     
         auto string_accessor = string_section_accessor(strtab);
