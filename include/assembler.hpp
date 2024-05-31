@@ -16,8 +16,10 @@ struct Section
 
 struct Symbol
 {
+    std::string name;
     int section;
     uint16_t offset;
+    int type = ELFIO::STT_NOTYPE;
 };
 
 struct Operand
@@ -46,7 +48,7 @@ public:
     ELFIO::elfio elf;
     std::vector<Section> sections;
     int current_section;
-    std::map<std::string, Symbol> symbols;
+    std::vector<Symbol> symbols;
 
     void assemble(antlr4::tree::ParseTree *tree);
 };

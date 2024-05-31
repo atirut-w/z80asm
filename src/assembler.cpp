@@ -59,17 +59,22 @@ void Assembler::set_section(const std::string &name)
 antlrcpp::Any Assembler::visitLabel(Z80AsmParser::LabelContext *ctx)
 {
     auto name = ctx->NAME()->getText();
-    if (symbols.find(name) != symbols.end())
+    if (find_if(symbols.begin(), symbols.end(), [&name](const Symbol &symbol) { return symbol.name == name; }) != symbols.end())
     {
         error(ctx, "symbol '" + name + "' already defined");
     }
-    symbols[name] = {current_section, (uint16_t)sections[current_section].data.size()};
+    symbols.push_back(Symbol{name, current_section, (uint16_t)sections[current_section].data.size()});
 
     return visitChildren(ctx);
 }
 
 antlrcpp::Any Assembler::visitInstruction(Z80AsmParser::InstructionContext *ctx)
 {
+    if (symbols.size() > 0 && symbols[symbols.size() - 1].type == STT_NOTYPE)
+    {
+        symbols[symbols.size() - 1].type = STT_FUNC;
+    }
+    
     auto mnemonic = ctx->mnemonic()->getText();
     vector<Operand> operands;
     if (ctx->operandList())
@@ -196,17 +201,14 @@ void Assembler::assemble(antlr4::tree::ParseTree *tree)
     
         auto string_accessor = string_section_accessor(strtab);
         auto symtab_accessor = symbol_section_accessor(elf, symtab);
-        for (auto &pair : symbols)
+        for (auto &symbol : symbols)
         {
-            auto &name = pair.first;
-            auto &symbol = pair.second;
-
             symtab_accessor.add_symbol(
                 string_accessor,
-                name.c_str(),
+                symbol.name.c_str(),
                 sections[symbol.section].org + symbol.offset,
                 0,
-                STT_NOTYPE,
+                symbol.type,
                 STV_DEFAULT,
                 sections[symbol.section].index
             );
