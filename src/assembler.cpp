@@ -23,6 +23,7 @@ Assembler::Assembler()
     elf.create(ELFCLASS32, ELFDATA2LSB);
     elf.set_type(ET_REL);
     elf.set_machine(EM_Z80);
+    elf.set_os_abi(ELFOSABI_STANDALONE);
 
     set_section(".text");
 }
