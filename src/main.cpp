@@ -6,6 +6,7 @@
 #include <Z80AsmLexer.h>
 #include <Z80AsmParser.h>
 #include <assembler.hpp>
+#include <stdexcept>
 
 using namespace std;
 using namespace argparse;
@@ -56,7 +57,15 @@ int main(int argc, char **argv)
     }
 
     Assembler assembler;
-    assembler.assemble(tree);
+    try
+    {
+        assembler.assemble(tree);
+    }
+    catch (const runtime_error &err)
+    {
+        cout << err.what() << endl;
+        return 1;
+    }
 
     assembler.module.generate_elf().save(abs_path.replace_extension(".o").string());
 
