@@ -58,7 +58,7 @@ int main(int argc, char **argv)
     Assembler assembler;
     assembler.assemble(tree);
 
-    assembler.elf.save(abs_path.replace_extension(".o").string());
+    assembler.module.generate_elf().save(abs_path.replace_extension(".o").string());
 
     return 0;
 }

@@ -34,6 +34,7 @@ add_custom_command(
 add_executable("z80asm"
     "src/main.cpp"
     "src/assembler.cpp"
+    "src/module.cpp"
 
     # Generated parser
     "parser/Z80AsmBaseListener.cpp"

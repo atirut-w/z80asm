@@ -6,25 +6,8 @@
 using namespace std;
 using namespace ELFIO;
 
-const map<string, int> SHFLAGS = {
-    {".text", SHF_ALLOC | SHF_EXECINSTR},
-    {".data", SHF_ALLOC | SHF_WRITE},
-    {".bss", SHF_ALLOC | SHF_WRITE},
-};
-
-const map<string, int> PFLAGS = {
-    {".text", PF_R | PF_X},
-    {".data", PF_R | PF_W},
-    {".bss", PF_R | PF_W},
-};
-
 Assembler::Assembler()
 {
-    elf.create(ELFCLASS32, ELFDATA2LSB);
-    elf.set_type(ET_REL);
-    elf.set_machine(EM_Z80);
-    elf.set_os_abi(ELFOSABI_STANDALONE);
-
     set_section(".text");
 }
 
@@ -40,40 +23,40 @@ void Assembler::warning(antlr4::ParserRuleContext *ctx, const std::string &messa
 
 void Assembler::emit(uint8_t byte)
 {
-    sections[current_section].data.push_back(byte);
+    module.sections[current_section].data.push_back(byte);
 }
 
 void Assembler::set_section(const std::string &name)
 {
-    auto it = find_if(sections.begin(), sections.end(), [&name](const Section &section) { return section.name == name; });
-    if (it == sections.end())
+    auto it = find_if(module.sections.begin(), module.sections.end(), [&name](const Section &section) { return section.name == name; });
+    if (it == module.sections.end())
     {
-        sections.push_back({name});
-        current_section = sections.size() - 1;
+        module.sections.push_back({name});
+        current_section = module.sections.size() - 1;
     }
     else
     {
-        current_section = it - sections.begin();
+        current_section = it - module.sections.begin();
     }
 }
 
 antlrcpp::Any Assembler::visitLabel(Z80AsmParser::LabelContext *ctx)
 {
     auto name = ctx->NAME()->getText();
-    if (find_if(symbols.begin(), symbols.end(), [&name](const Symbol &symbol) { return symbol.name == name; }) != symbols.end())
+    if (find_if(module.symbols.begin(), module.symbols.end(), [&name](const Symbol &symbol) { return symbol.name == name; }) != module.symbols.end())
     {
         error(ctx, "symbol '" + name + "' already defined");
     }
-    symbols.push_back(Symbol{name, current_section, (uint16_t)sections[current_section].data.size()});
+    module.symbols.push_back(Symbol{name, current_section, (uint16_t)module.sections[current_section].data.size()});
 
     return visitChildren(ctx);
 }
 
 antlrcpp::Any Assembler::visitInstruction(Z80AsmParser::InstructionContext *ctx)
 {
-    if (symbols.size() > 0 && symbols[symbols.size() - 1].type == STT_NOTYPE)
+    if (module.symbols.size() > 0 && module.symbols[module.symbols.size() - 1].type == STT_NOTYPE)
     {
-        symbols[symbols.size() - 1].type = STT_FUNC;
+        module.symbols[module.symbols.size() - 1].type = STT_FUNC;
     }
     
     auto mnemonic = ctx->mnemonic()->getText();
@@ -154,64 +137,4 @@ antlrcpp::Any Assembler::visitNumber(Z80AsmParser::NumberContext *ctx)
 void Assembler::assemble(antlr4::tree::ParseTree *tree)
 {
     visit(tree);
-    
-    int auto_offset = 0;
-    for (auto &section : sections)
-    {
-        if (section.org == (uint16_t)-1)
-        {
-            section.org = auto_offset;
-        }
-        
-        auto elf_section = elf.sections.add(section.name);
-        elf_section->set_type(SHT_PROGBITS);
-        if (SHFLAGS.find(section.name) != SHFLAGS.end())
-        {
-            elf_section->set_flags(SHFLAGS.at(section.name));
-        }
-        elf_section->set_data(reinterpret_cast<const char *>(section.data.data()), section.data.size());
-        elf_section->set_addr_align(1);
-
-        auto segment = elf.segments.add();
-        segment->set_type(PT_LOAD);
-        segment->set_virtual_address(section.org);
-        segment->set_physical_address(section.org);
-        if (PFLAGS.find(section.name) != PFLAGS.end())
-        {
-            segment->set_flags(PFLAGS.at(section.name));
-        }
-        segment->set_align(1);
-        segment->add_section_index(elf_section->get_index(), elf_section->get_addr_align());
-
-        section.index = elf_section->get_index();
-        auto_offset += section.data.size();
-    }
-
-    if (symbols.size() > 0)
-    {
-        auto strtab = elf.sections.add(".strtab");
-        strtab->set_type(SHT_STRTAB);
-        strtab->set_entry_size(elf.get_default_entry_size(SHT_STRTAB));
-
-        auto symtab = elf.sections.add(".symtab");
-        symtab->set_type(SHT_SYMTAB);
-        symtab->set_info(symbols.size() + 1); // Wtf?
-        symtab->set_link(strtab->get_index());
-        symtab->set_entry_size(elf.get_default_entry_size(SHT_SYMTAB));
-    
-        auto string_accessor = string_section_accessor(strtab);
-        auto symtab_accessor = symbol_section_accessor(elf, symtab);
-        for (auto &symbol : symbols)
-        {
-            symtab_accessor.add_symbol(
-                string_accessor,
-                symbol.name.c_str(),
-                sections[symbol.section].org + symbol.offset,
-                0,
-                symbol.type,
-                STV_DEFAULT,
-                sections[symbol.section].index
-            );
-        }
-    }
 }
