@@ -18,6 +18,7 @@ private:
     void warning(antlr4::ParserRuleContext *ctx, const std::string &message);
     void emit(uint8_t byte);
     void set_section(const std::string &name);
+    void symbol_type(int stt);
 
     virtual antlrcpp::Any visitLabel(Z80AsmParser::LabelContext *ctx) override;
     virtual antlrcpp::Any visitInstruction(Z80AsmParser::InstructionContext *ctx) override;

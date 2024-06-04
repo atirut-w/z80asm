@@ -40,6 +40,14 @@ void Assembler::set_section(const std::string &name)
     }
 }
 
+void Assembler::symbol_type(int stt)
+{
+    if (module.symbols.size() > 0 && module.symbols[module.symbols.size() - 1].type == STT_NOTYPE)
+    {
+        module.symbols[module.symbols.size() - 1].type = STT_FUNC;
+    }
+}
+
 antlrcpp::Any Assembler::visitLabel(Z80AsmParser::LabelContext *ctx)
 {
     auto name = ctx->NAME()->getText();
@@ -54,10 +62,7 @@ antlrcpp::Any Assembler::visitLabel(Z80AsmParser::LabelContext *ctx)
 
 antlrcpp::Any Assembler::visitInstruction(Z80AsmParser::InstructionContext *ctx)
 {
-    if (module.symbols.size() > 0 && module.symbols[module.symbols.size() - 1].type == STT_NOTYPE)
-    {
-        module.symbols[module.symbols.size() - 1].type = STT_FUNC;
-    }
+    symbol_type(STT_FUNC);
     
     auto mnemonic = ctx->mnemonic()->getText();
     vector<Operand> operands;
